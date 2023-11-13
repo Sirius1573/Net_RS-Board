@@ -32,8 +32,10 @@
 ..\obj\usart.o: ..\SYSTEM\sys\sys.h
 ..\obj\usart.o: ..\SYSTEM\delay\delay.h
 ..\obj\usart.o: ..\HARDWARE\REMOTE\Remote.h
+..\obj\usart.o: ..\HARDWARE\W5500\W5500.h
 ..\obj\usart.o: ..\HARDWARE\DataPackage\DataPackage.h
 ..\obj\usart.o: D:\Software\KeilMDK\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\usart.o: D:\Software\KeilMDK\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\usart.o: D:\Software\KeilMDK\ARM\ARMCC\Bin\..\include\string.h
 ..\obj\usart.o: D:\Software\KeilMDK\ARM\ARMCC\Bin\..\include\stdarg.h
+..\obj\usart.o: ..\HARDWARE\AT24C512\24cxx.h

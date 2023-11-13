@@ -17,11 +17,11 @@ uint8_t tx_buf[20];
 uint8_t Flag_LearnState = 0;
 uint16_t pulseWidth = 0;
 uint16_t arr_length = 0;
-uint32_t PulseTab[500];
-u32 Last_DataEAddr[1];
-u32 Data_FirstAddr[]={120,244,250,9000};
-u32 Send_DataTab[500];
-u32 test[4];
+u16 PulseTab[500];
+u16 Last_DataEAddr[1];
+u16 Data_FirstAddr[]={120,244,250,9000};
+u16 Send_DataTab[500];
+u16 test[4];
 uint16_t test_num = 0;
 
 int start_addr;
@@ -215,7 +215,7 @@ void Remote_Send2_Init(void)
  * @param {TIM_TypeDef} *TIMx —— 发射通道，TIM2:通过LED1发射；TIM2:通过LED2发射
  * @return None
  *********************************************************/
-void Remote_Send(TIM_TypeDef *TIMx,u32 data[],uint16_t length)
+void Remote_Send(TIM_TypeDef *TIMx,u16 data[],uint16_t length)
 {
 	uint16_t i;
 	if(TIMx == TIM2)
@@ -294,40 +294,8 @@ void funcNet_StartLearn(uint8_t *BUF)
 void funcRS_StartLearn(uint8_t *BUF)
 {
 	uint8_t buf[20];
-    if((strstr((const char *)BUF+1, "funcRSStartLearn")))
+    if((strstr((const char *)BUF, "funcRSStartLearn")))
     {
-		
-		sprintf((char *)buf, "funcRSreply\r\n");
-        if(USART_Channel == 2)
-        {
-            RS485rwack_1 = 1;
-            USARTx_SendArray(USART2, buf, 16);
-            rx2_cnt=0;
-		    memset(rx2_buf,0,sizeof(rx2_buf));
-        }
-        else if(USART_Channel == 3)
-        {
-            RS485rwack_2 = 1;
-            USARTx_SendArray(USART3, buf, 16);
-            rx3_cnt=0;
-		    memset(rx3_buf,0,sizeof(rx3_buf));
-        }
-        else if(USART_Channel == 4)
-        {
-            RS485rwack_3 = 1;
-            USARTx_SendArray(UART4, buf, 16);
-            rx4_cnt=0;
-		    memset(rx4_buf,0,sizeof(rx4_buf));
-        }
-		else if(USART_Channel == 1)
-        {
-            USARTx_SendArray(USART1, buf, 16);
-            rx1_cnt=0;
-		    memset(rx1_buf,0,sizeof(rx1_buf));
-        }
-        RS485rwack_1 = 0;
-        RS485rwack_2 = 0;
-        RS485rwack_3 = 0;
         EXTI->IMR |= EXTI_Line8;   
 	}
 }
@@ -379,9 +347,9 @@ void funcRS_StarSend(uint8_t *BUF)
 {
     uint8_t *p;
 
-    if((strstr((const char *)BUF+1, "funcRSStartSend")))
+    if((strstr((const char *)BUF, "funcRSStartSend")))
     {
-        p = (uint8_t *)((strstr((const char *)BUF+1, "funcRSStartSend")) + strlen("funcRSStartSend"));
+        p = (uint8_t *)((strstr((const char *)BUF, "funcRSStartSend")) + strlen("funcRSStartSend"));
         p = (u8 *)(strstr((const char *)p,":")+strlen(":"));//发射通道
         channel = atoi((const char *)p);
 

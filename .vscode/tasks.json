@@ -58,6 +58,14 @@
 			"program": "${command:embedded-debug.getBinaryFile}",
 			"problemMatcher": [],
 			"label": "embedded-debug.daplink-flash: Flash Device (DAPLink)"
+		},
+		{
+			"type": "embedded-debug.arm-flash",
+			"serialNumber": "${command:device-manager.getSerialNumber}",
+			"program": "${command:embedded-debug.getApplicationFile}",
+			"cmsisPack": "${command:device-manager.getDevicePack}",
+			"problemMatcher": [],
+			"label": "embedded-debug.arm-flash: Flash Device (Arm Debugger)"
 		}
 	]
 }

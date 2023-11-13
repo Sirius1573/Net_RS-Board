@@ -2,14 +2,22 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Embedded Debug",
+      "type": "embedded-debug",
+      "request": "launch",
+      "serialNumber": "${command:device-manager.getSerialNumber}",
+      "program": "${command:embedded-debug.getApplicationFile}",
+      "cmsisPack": "${command:device-manager.getDevicePack}"
+    },
+    {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
       "request": "launch",
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "e:/Electronics/老师项目/通信板卡/code_V1/HARDWARE/DataPackage",
-      "program": "e:/Electronics/老师项目/通信板卡/code_V1/HARDWARE/DataPackage/build/Debug/outDebug",
+      "cwd": "e:/Electronics/老师项目/通信板卡/code_V3/HARDWARE/USART",
+      "program": "e:/Electronics/老师项目/通信板卡/code_V3/HARDWARE/USART/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

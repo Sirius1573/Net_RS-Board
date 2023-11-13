@@ -10,29 +10,97 @@
 #include "sys.h"
 #include "delay.h"
 #include "Remote.h"
+#include "W5500.h"
 #include "DataPackage.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include "24cxx.h"
+
+uint8_t USART1_RxFlag;
+uint8_t USART1_RxState = 0;//状态机步骤标志位
+uint8_t rx1_cnt;
+uint8_t rx1_buf[100];
 
 uint8_t USART2_RxFlag;
-uint8_t USART3_RxFlag;
-uint8_t UART4_RxFlag;
-uint8_t UART5_RxFlag;
-uint8_t rx1_cnt;
-uint8_t rx1_buf[50];
+uint8_t USART2_RxState = 0;//状态机步骤标志位
 uint8_t rx2_cnt;
-uint8_t rx2_buf[50];
+uint8_t rx2_buf[100];
+
+uint8_t USART3_RxFlag;
+uint8_t USART3_RxState = 0;//状态机步骤标志位
 uint8_t rx3_cnt;
-uint8_t rx3_buf[50];
+uint8_t rx3_buf[100];
+
+uint8_t UART4_RxFlag;
+uint8_t USART4_RxState = 0;//状态机步骤标志位
 uint8_t rx4_cnt;
-uint8_t rx4_buf[50];
+uint8_t rx4_buf[100];
+
+uint8_t UART5_RxFlag;
 uint8_t rx5_cnt;
-uint8_t rx5_buf[50];
+uint8_t rx5_buf[100];
+
 uint8_t buf[20];
 uint8_t USART_Channel = 66;
 uint8_t startup_flag = 0;
+uint32_t Buad_Tab[3] = { 9600,9600,9600};
+
+USART_Param_Tab USART_Param_Arr;
+USART_Param_Index USART2_Config = { 0,0,0,0 };
+USART_Param_Index USART3_Config = { 0,0,0,0 };
+USART_Param_Index UART4_Config = { 0,0,0,0 };
+
+void Load_USART_Param(void)
+{
+	unsigned char eeprom_test[2];
+	uint8_t i;
+	uint16_t dataToWrite[2];
+
+	AT24CXX_Read(55, eeprom_test, 2);
+
+	if (eeprom_test[0] == 0xff && eeprom_test[1] == 0xff)
+	{
+		AT24CXX_Write(55, USART2_Config.USART_Param_Index, 4);
+		AT24CXX_Write(59, USART3_Config.USART_Param_Index, 4);
+		AT24CXX_Write(63, UART4_Config.USART_Param_Index, 4);
+		for (i = 0;i <= 2;i++)
+		{
+			dataToWrite[0] = (uint16_t)(Buad_Tab[i] & 0xFFFF);         // 最低 16 位
+			dataToWrite[1] = (uint16_t)((Buad_Tab[i] >> 16) & 0xFFFF);  // 高 16 位
+			AT24C512_Write2Byte(67 + 4 * i, dataToWrite, 2);
+		}
+			
+	}
+
+	AT24CXX_Read(55, USART2_Config.USART_Param_Index, 4);
+	AT24CXX_Read(59, USART3_Config.USART_Param_Index, 4);
+	AT24CXX_Read(63, UART4_Config.USART_Param_Index, 4);
+	for (i = 0;i <= 2;i++)
+	{
+		AT24C512_Read2Byte(67 + 4 * i, dataToWrite, 2);
+		Buad_Tab[i] = ((uint32_t)dataToWrite[1] << 16) | (uint32_t)dataToWrite[0];
+	}
+	//	AT24C512_Read2Byte(67, Buad_Tab, 4);
+
+	USART_Param_Arr.WordLength_Tab[0] = USART_WordLength_8b;
+	USART_Param_Arr.WordLength_Tab[1] = USART_WordLength_9b;
+
+	USART_Param_Arr.StopBits_Tab[0] = USART_StopBits_1;
+	USART_Param_Arr.StopBits_Tab[1] = USART_StopBits_0_5;
+	USART_Param_Arr.StopBits_Tab[2] = USART_StopBits_2;
+	USART_Param_Arr.StopBits_Tab[3] = USART_StopBits_1_5;
+
+	USART_Param_Arr.Parity_Tab[0] = USART_Parity_No;
+	USART_Param_Arr.Parity_Tab[1] = USART_Parity_Even;
+	USART_Param_Arr.Parity_Tab[2] = USART_Parity_Odd;
+
+	USART_Param_Arr.HardwareFlowControl_Tab[0] = USART_HardwareFlowControl_None;
+	USART_Param_Arr.HardwareFlowControl_Tab[1] = USART_HardwareFlowControl_RTS;
+	USART_Param_Arr.HardwareFlowControl_Tab[2] = USART_HardwareFlowControl_CTS;
+	USART_Param_Arr.HardwareFlowControl_Tab[3] = USART_HardwareFlowControl_RTS_CTS;
+}
 
 void USART1_Init(uint32_t bound)
 {
@@ -40,9 +108,9 @@ void USART1_Init(uint32_t bound)
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
-	 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1|RCC_APB2Periph_GPIOA, ENABLE);	//使能USART1，GPIOA时钟
-  
+	
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA, ENABLE);	//使能USART1，GPIOA时钟
+
 	//USART1_TX   GPIOA.9
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9; //PA.9
   	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -84,8 +152,9 @@ void USART2_Init(uint32_t bound)
     GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
  	NVIC_InitTypeDef NVIC_InitStructure;
- 
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOE  | RCC_APB2Periph_AFIO, ENABLE);//使能GPIOA,D时钟
+
+	
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOE | RCC_APB2Periph_AFIO, ENABLE);//使能GPIOA,D时钟
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2,ENABLE);//使能USART2时钟
 	
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;				 //PE7 RS485R/W_1
@@ -104,10 +173,10 @@ void USART2_Init(uint32_t bound)
 	GPIO_Init(GPIOA, &GPIO_InitStructure);  
 
 	USART_InitStructure.USART_BaudRate = bound;//波特率设置
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;//8位数据长度
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;//一个停止位
-	USART_InitStructure.USART_Parity = USART_Parity_No;///奇偶校验位
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//无硬件数据流控制
+	USART_InitStructure.USART_WordLength = USART_Param_Arr.WordLength_Tab[USART2_Config.USART_Param_Index[0]];//8位数据长度
+	USART_InitStructure.USART_StopBits = USART_Param_Arr.StopBits_Tab[USART2_Config.USART_Param_Index[1]];//一个停止位
+	USART_InitStructure.USART_Parity = USART_Param_Arr.Parity_Tab[USART2_Config.USART_Param_Index[2]];///奇偶校验位
+	USART_InitStructure.USART_HardwareFlowControl = USART_Param_Arr.HardwareFlowControl_Tab[USART2_Config.USART_Param_Index[3]];//无硬件数据流控制
 	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;//收发模式
 	USART_Init(USART2, &USART_InitStructure); ; //初始化串口
   
@@ -151,12 +220,12 @@ void USART3_Init(uint32_t bound)
 	GPIO_Init(GPIOB, &GPIO_InitStructure);  
 
 	USART_InitStructure.USART_BaudRate = bound;//波特率设置
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;//8位数据长度
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;//一个停止位
-	USART_InitStructure.USART_Parity = USART_Parity_No;///奇偶校验位
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//无硬件数据流控制
+	USART_InitStructure.USART_WordLength = USART_Param_Arr.WordLength_Tab[USART3_Config.USART_Param_Index[0]];//8位数据长度
+	USART_InitStructure.USART_StopBits = USART_Param_Arr.StopBits_Tab[USART3_Config.USART_Param_Index[1]];//一个停止位
+	USART_InitStructure.USART_Parity = USART_Param_Arr.Parity_Tab[USART3_Config.USART_Param_Index[2]];///奇偶校验位
+	USART_InitStructure.USART_HardwareFlowControl = USART_Param_Arr.HardwareFlowControl_Tab[USART3_Config.USART_Param_Index[3]];//无硬件数据流控制
 	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;//收发模式
-	USART_Init(USART3, &USART_InitStructure); ; //初始化串口
+	USART_Init(USART3, &USART_InitStructure); //初始化串口
   
 	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn; //使能串口2中断
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0; //先占优先级2级
@@ -198,12 +267,12 @@ void UART4_Init(uint32_t bound)
 	GPIO_Init(GPIOC, &GPIO_InitStructure);  
 
 	USART_InitStructure.USART_BaudRate = bound;//波特率设置
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;//8位数据长度
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;//一个停止位
-	USART_InitStructure.USART_Parity = USART_Parity_No;///奇偶校验位
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//无硬件数据流控制
+	USART_InitStructure.USART_WordLength = USART_Param_Arr.WordLength_Tab[USART3_Config.USART_Param_Index[0]];//8位数据长度
+	USART_InitStructure.USART_StopBits = USART_Param_Arr.StopBits_Tab[USART3_Config.USART_Param_Index[1]];//一个停止位
+	USART_InitStructure.USART_Parity = USART_Param_Arr.Parity_Tab[USART3_Config.USART_Param_Index[2]];///奇偶校验位
+	USART_InitStructure.USART_HardwareFlowControl = USART_Param_Arr.HardwareFlowControl_Tab[USART3_Config.USART_Param_Index[3]];//无硬件数据流控制
 	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;//收发模式
-	USART_Init(UART4, &USART_InitStructure); ; //初始化串口
+	USART_Init(UART4, &USART_InitStructure);  //初始化串口
   
 	NVIC_InitStructure.NVIC_IRQChannel = UART4_IRQn; //使能串口2中断
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0; //先占优先级2级
@@ -261,66 +330,92 @@ void USART1_IRQHandler(void)
 {
     if(USART_GetITStatus(USART1,USART_IT_RXNE) == SET)
     {
-        USART_Channel = 1;
-        rx1_cnt++;
-		rx1_buf[rx1_cnt] = USART_ReceiveData(USART1);
-        if((strstr((const char *)rx1_buf+1, "funcRSStartUp")))
-        {
-			startup_flag = 1;
-            USART_Channel = 0;
-			rx1_cnt=0;
-			memset(rx1_buf,0,sizeof(rx1_buf));
-        }
-		if(startup_flag)
+		uint8_t rx1_data;
+		USART_Channel = 1;
+
+		rx1_data = USART_ReceiveData(USART1);
+		if (startup_flag == 0)
 		{
-			funcRS_StartLearn(rx1_buf);
-			if(rx1_buf[rx1_cnt] == '/')
+			rx1_cnt++;
+			rx1_buf[rx1_cnt] = USART_ReceiveData(USART1);
+			if (strstr((const char*)rx1_buf + 1, "funcRSStartUp\r\n"))
 			{
 				USART_Channel = 0;
-				sprintf((char *)buf, "funcRSreply\r\n");
-				USARTx_SendArray(USART1, buf, 16);
-				rx1_cnt=0;
-				/***********func***********/
-				funcRS_OCEPCtrl(rx1_buf);
-				funcRS_StarSend(rx1_buf);
-				/**************************/
-				memset(rx1_buf,0,sizeof(rx1_buf));
+				rx1_cnt = 0;
+				memset(rx1_buf, 0, 100);
+			}
+
+		}
+		if (startup_flag)
+		{
+			if (USART1_RxState == 0)
+			{
+				if (rx1_data == '\r')
+				{
+					USART1_RxState = 1;
+				}
+				else
+				{
+					rx1_buf[rx1_cnt] = rx1_data;
+					rx1_cnt++;
+				}
+			}
+			else if (USART1_RxState == 1)
+			{
+				if (rx1_data == '\n')
+				{
+					USART1_RxState = 0;
+					rx1_buf[rx1_cnt] = '\0';
+					USART1_RxFlag = 1;   //该标志位在接收数据使用后及时清理！！
+				}
 			}
 		}
-        USART_ClearITPendingBit(USART2, USART_IT_RXNE);
+		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
     }
 }
 
 void USART2_IRQHandler(void)
 {
     if(USART_GetITStatus(USART2,USART_IT_RXNE) == SET)
-    {
-        USART_Channel = 2;
-        rx2_cnt++;
-		rx2_buf[rx2_cnt] = USART_ReceiveData(USART2);
-        if((strstr((const char *)rx2_buf+1, "funcRSStartUp")))
-        {
-			startup_flag = 1;
-            USART_Channel = 0;
-			rx2_cnt=0;
-			memset(rx2_buf,0,sizeof(rx2_buf));
-        }
-		if(startup_flag)
+	{
+		uint8_t rx2_data;
+		USART_Channel = 2;
+        
+		rx2_data = USART_ReceiveData(USART2);
+		if (startup_flag == 0)
 		{
-			funcRS_StartLearn(rx2_buf);
-			if(rx2_buf[rx2_cnt] == '/')
+			rx2_cnt++;
+			rx2_buf[rx2_cnt] = USART_ReceiveData(USART2);
+			if (strstr((const char*)rx2_buf + 1, "funcRSStartUp@~"))
 			{
 				USART_Channel = 0;
-				RS485rwack_1 = 1;
-				sprintf((char *)buf, "funcRSreply\r\n");
-				USARTx_SendArray(USART2, buf, 16);
-				rx2_cnt=0;
-				/***********func***********/
-				funcRS_OCEPCtrl(rx2_buf);
-				funcRS_StarSend(rx2_buf);
-				/**************************/
-				memset(rx2_buf,0,sizeof(rx2_buf));
-				RS485rwack_1 = 0;
+				rx2_cnt = 0;
+				memset(rx2_buf, 0, 100);
+			}
+			
+		}
+		if (startup_flag)
+		{
+			if (USART2_RxState == 0)
+			{
+				if (rx2_data == '@')
+				{
+					USART2_RxState = 1;
+				}
+				else
+				{
+					rx2_buf[rx2_cnt] = rx2_data;
+					rx2_cnt++;
+				}
+			}
+			else if (USART2_RxState == 1)
+			{
+				if (rx2_data == '~')
+				{
+					USART2_RxState = 0;
+					rx2_buf[rx2_cnt] = '\0';
+					USART2_RxFlag = 1;   //该标志位在接收数据使用后及时清理！！
+				}
 			}
 		}
         USART_ClearITPendingBit(USART2, USART_IT_RXNE);
@@ -329,73 +424,97 @@ void USART2_IRQHandler(void)
 
 void USART3_IRQHandler(void)
 {
-    if(USART_GetITStatus(USART3,USART_IT_RXNE) == SET)
-    {
-        USART_Channel = 3;
-        rx3_cnt++;
-		rx3_buf[rx3_cnt] = USART_ReceiveData(USART3);
-        if((strstr((const char *)rx3_buf+1, "funcRSStartUp")))
-        {
-			startup_flag = 1;
-            USART_Channel = 0;
-			rx3_cnt=0;
-			memset(rx3_buf,0,sizeof(rx3_buf));
-        }
-		if(startup_flag)
+	if (USART_GetITStatus(USART3, USART_IT_RXNE) == SET)
+	{
+		uint8_t rx3_data;
+		USART_Channel = 3;
+
+		rx3_data = USART_ReceiveData(USART3);
+		if (startup_flag == 0)
 		{
-			funcRS_StartLearn(rx3_buf);
-			if(rx3_buf[rx3_cnt] == '/')
+			rx3_cnt++;
+			rx3_buf[rx3_cnt] = USART_ReceiveData(USART3);
+			if (strstr((const char*)rx3_buf + 1, "funcRSStartUp@~"))
 			{
 				USART_Channel = 0;
-				RS485rwack_2 = 1;
-				sprintf((char *)buf, "funcRSreply\r\n");
-				USARTx_SendArray(USART3, buf, 16);
-				rx3_cnt=0;
-				/***********func***********/
-				funcRS_StarSend(rx3_buf);
-				funcRS_OCEPCtrl(rx3_buf);
-				/**************************/
-				memset(rx3_buf,0,sizeof(rx3_buf));
-				RS485rwack_2 = 0;
+				rx3_cnt = 0;
+				memset(rx3_buf, 0, 100);
+			}
+
+		}
+		if (startup_flag)
+		{
+			if (USART3_RxState == 0)
+			{
+				if (rx3_data == '@')
+				{
+					USART3_RxState = 1;
+				}
+				else
+				{
+					rx2_buf[rx2_cnt] = rx3_data;
+					rx2_cnt++;
+				}
+			}
+			else if (USART3_RxState == 1)
+			{
+				if (rx3_data == '~')
+				{
+					USART3_RxState = 0;
+					rx3_buf[rx3_cnt] = '\0';
+					USART3_RxFlag = 1;   //该标志位在接收数据使用后及时清理！！
+				}
 			}
 		}
-        USART_ClearITPendingBit(USART3, USART_IT_RXNE);
-    }
+		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+	}
 }
 
 void UART4_IRQHandler(void)
 {
     if(USART_GetITStatus(UART4,USART_IT_RXNE) == SET)
     {
-        USART_Channel = 4;
-        rx4_cnt++;
-		rx4_buf[rx4_cnt] = USART_ReceiveData(UART4);
-        if((strstr((const char *)rx4_buf+1, "funcRSStartUp")))
-        {
-			startup_flag = 1;
-            USART_Channel = 0;
-			rx4_cnt=0;
-			memset(rx4_buf,0,sizeof(rx4_buf));
-        }
-		if(startup_flag)
+		uint8_t rx4_data;
+		USART_Channel = 4;
+
+		rx4_data = USART_ReceiveData(UART4);
+		if (startup_flag == 0)
 		{
-			funcRS_StartLearn(rx4_buf);
-			if(rx4_buf[rx4_cnt] == '/')
+			rx4_cnt++;
+			rx4_buf[rx4_cnt] = USART_ReceiveData(UART4);
+			if (strstr((const char*)rx4_buf + 1, "funcRSStartUp@~"))
 			{
 				USART_Channel = 0;
-				RS485rwack_3 = 1;
-				sprintf((char *)buf, "funcRSreply\r\n");
-				USARTx_SendArray(UART4, buf, 16);
-				rx4_cnt=0;
-				/***********func***********/
-				funcRS_StarSend(rx4_buf);
-				funcRS_OCEPCtrl(rx4_buf);
-				/**************************/
-				memset(rx4_buf,0,sizeof(rx4_buf));
-				RS485rwack_1 = 0;
+				rx4_cnt = 0;
+				memset(rx4_buf, 0, 100);
+			}
+
+		}
+		if (startup_flag)
+		{
+			if (USART4_RxState == 0)
+			{
+				if (rx4_data == '@')
+				{
+					USART4_RxState = 1;
+				}
+				else
+				{
+					rx4_buf[rx4_cnt] = rx4_data;
+					rx4_cnt++;
+				}
+			}
+			else if (USART4_RxState == 1)
+			{
+				if (rx4_data == '~')
+				{
+					USART4_RxState = 0;
+					rx4_buf[rx4_cnt] = '\0';
+					UART4_RxFlag = 1;   //该标志位在接收数据使用后及时清理！！
+				}
 			}
 		}
-        USART_ClearITPendingBit(UART4, USART_IT_RXNE);
+			USART_ClearITPendingBit(UART4, USART_IT_RXNE);
     }
 }
 
@@ -505,4 +624,73 @@ void USART5_Printf(char *format, ...)
 	USARTx_SendString(UART5,String);
 }
 
+void USART_Proce(void)
+{
+	if (USART1_RxState)
+	{
+		USARTx_SendString(USART1, "funcRSreply\r\n\0");
 
+		/****************function*****************/
+		funcRS_StartLearn(rx1_buf);
+		funcRS_MesgToUDP(rx1_buf);
+		funcRS_OCEPCtrl(rx1_buf);
+		funcRS_StarSend(rx1_buf);
+		/****************function*****************/
+
+		rx1_cnt = 0;
+		memset(rx1_buf, 0, sizeof(rx1_buf));
+		USART1_RxFlag = 0;
+	}
+	if (USART2_RxState)
+	{
+		USARTx_SendString(USART2, "funcRSreply\r\n\0");
+		RS485rwack_1 = 1;
+
+		/****************function*****************/
+		funcRS_StartLearn(rx2_buf);
+		funcRS_MesgToUDP(rx2_buf);
+		funcRS_OCEPCtrl(rx2_buf);
+		funcRS_StarSend(rx2_buf);
+		/****************function*****************/
+
+		RS485rwack_1 = 0;
+		rx2_cnt = 0;
+		memset(rx2_buf, 0, sizeof(rx2_buf));
+		USART2_RxFlag = 0;
+	}
+	else if (USART3_RxState)
+	{
+		USARTx_SendString(USART3, "funcRSreply\r\n\0");
+		RS485rwack_2 = 1;
+
+		/****************function*****************/
+		funcRS_StartLearn(rx3_buf);
+		funcRS_MesgToUDP(rx3_buf);
+		funcRS_OCEPCtrl(rx3_buf);
+		funcRS_StarSend(rx3_buf);
+		/****************function*****************/
+
+		RS485rwack_2 = 0;
+		rx3_cnt = 0;
+		memset(rx3_buf, 0, sizeof(rx3_buf));
+		USART3_RxFlag = 0;
+	}
+	else if (USART4_RxState)
+	{
+		USARTx_SendString(UART4, "funcRSreply\r\n\0");
+		RS485rwack_3 = 1;
+
+		/****************function*****************/
+		funcRS_StartLearn(rx4_buf);
+		funcRS_MesgToUDP(rx4_buf);
+		funcRS_OCEPCtrl(rx4_buf);
+		funcRS_StarSend(rx4_buf);
+		/****************function*****************/
+
+		RS485rwack_3 = 0;
+		rx4_cnt = 0;
+		memset(rx4_buf, 0, sizeof(rx4_buf));
+		UART4_RxFlag = 0;
+	}
+	
+}

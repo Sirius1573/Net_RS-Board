@@ -17,8 +17,12 @@ void Address_Check(void);
 void Online_Reminder(void);
 void Set_NetParam(uint8_t *BUF);
 void Get_NetParam(void);
-void funcNet_OCEPCtrl(uint8_t *BUF);
+void funcNet_OCEPCtrl(uint8_t* BUF);
+void funcNet_MesgToRS(uint8_t* BUF);
+void funcNet_SetUARTParam(uint8_t* BUF);
+void Get_USARTParam(void);
 
-void funcRS_OCEPCtrl(uint8_t *BUF);
+void funcRS_OCEPCtrl(uint8_t* BUF);
+void funcRS_MesgToUDP(uint8_t* BUF);
 
 #endif

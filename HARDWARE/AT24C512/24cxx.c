@@ -277,7 +277,7 @@ void AT24CXX_Write(u16 WriteAddr,u8 *pBuffer,u16 NumToWrite)
  * @param {u16} NumToWrite 写入数据的个数
  * @return None
  *********************************************************/
-void AT24C512_Write2Byte(u16 WriteAddr,u32 *DataToWrite,u16 NumToWrite)
+void AT24C512_Write2Byte(u16 WriteAddr,u16 *DataToWrite,u16 NumToWrite)
 {
     while(NumToWrite--)
 	{
@@ -298,12 +298,12 @@ void AT24C512_Write2Byte(u16 WriteAddr,u32 *DataToWrite,u16 NumToWrite)
  * @param {u16} NumToRead   要读出数据的个数
  * @return None
  *********************************************************/
-void AT24C512_Read2Byte(u16 ReadAddr,u32 *pBuffer,u16 NumToRead)
+void AT24C512_Read2Byte(u16 ReadAddr,u16 *pBuffer,u16 NumToRead)
 {
 	while(NumToRead)
 	{
 		*pBuffer++=AT24C512_ReadLenByte(ReadAddr,2);
-        ReadAddr += 2;
+        ReadAddr +=2;
         NumToRead--;
 	}
 }

@@ -50,8 +50,8 @@ void AT24CXX_WriteLenByte(u16 WriteAddr,u32 DataToWrite,u8 Len); //Ö¸¶¨µØÖ·¿ªÊ¼Ð
 u32 AT24CXX_ReadLenByte(u16 ReadAddr,u8 Len);					 //Ö¸¶¨µØÖ·¿ªÊ¼¶ÁÈ¡Ö¸¶¨³¤¶ÈÊý¾Ý
 void AT24CXX_Write(u16 WriteAddr,u8 *pBuffer,u16 NumToWrite);	 //´ÓÖ¸¶¨µØÖ·¿ªÊ¼Ð´ÈëÖ¸¶¨³¤¶ÈµÄÊý¾Ý
 void AT24CXX_Read(u16 ReadAddr,u8 *pBuffer,u16 NumToRead);   	 //´ÓÖ¸¶¨µØÖ·¿ªÊ¼¶Á³öÖ¸¶¨³¤¶ÈµÄÊý¾Ý
-void AT24C512_Write2Byte(u16 WriteAddr, u32 *DataToWrite, u16 NumToWrite); 
-void AT24C512_Read2Byte(u16 ReadAddr, u32 *pBuffer, u16 NumToRead);
+void AT24C512_Write2Byte(u16 WriteAddr, u16 *DataToWrite, u16 NumToWrite); 
+void AT24C512_Read2Byte(u16 ReadAddr, u16 *pBuffer, u16 NumToRead);
 
 u8 AT24CXX_Check(void);  //¼ì²éÆ÷¼þ
 void AT24CXX_Init(void); //³õÊ¼»¯IIC

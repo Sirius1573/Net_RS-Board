@@ -20,7 +20,7 @@
 
 uint8_t Key_Time = 0;
 uint8_t NetParam_Str[1024];
-extern u32 IR_CodeStartAddr[];
+extern u16 IR_CodeStartAddr[];
 /*********************************************************
  * @brief °´¼ü³õÊ¼»¯
  * @return None

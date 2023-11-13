@@ -15,8 +15,8 @@
 #define INFRARED_SEND
 
 extern u8 Flag_LearnState;
-extern u32 PulseTab[];
-extern u32 Last_DataEAddr[1];
+extern u16 PulseTab[];
+extern u16 Last_DataEAddr[1];
 extern int start_addr;
 extern int data_length;
 extern uint16_t arr_length;
@@ -25,7 +25,7 @@ void Remote_Send1_Init(void);
 void Remote_Send2_Init(void);
 void funcNet_StartLearn(uint8_t *BUF);
 void funcRS_StartLearn(uint8_t *BUF);
-void Remote_Send(TIM_TypeDef *TIMx,u32 data[],uint16_t length);
+void Remote_Send(TIM_TypeDef *TIMx,u16 data[],uint16_t length);
 void funcNet_StarSend(uint8_t *BUF);
 void funcRS_StarSend(uint8_t *BUF);
 
