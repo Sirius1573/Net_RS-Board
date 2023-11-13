@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "ocep.h": "c",
+        "delay.h": "c",
+        "usart.h": "c",
+        "stm32f10x_spi.h": "c",
+        "w5500.h": "c"
+    }
+}
