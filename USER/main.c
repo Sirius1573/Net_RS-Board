@@ -66,27 +66,24 @@ int main(void)
 			Device_Init();	//恢复出厂设置
 			Online_Reminder();
 		}
-		RS485rwack_1 = 0;
-		RS485rwack_2 = 0;
-		RS485rwack_3 = 0;
-		if (((S0_Data & S_RECEIVE) == S_RECEIVE))//如果Socket0接收到数据
-		{
-			Process_Socket_Data(0);
+		
+		if((S0_Data & S_RECEIVE) == S_RECEIVE)//如果Socket0接收到数据
+		{   
 			Address_Check();
      		S0_Data&=~S_RECEIVE;
 			if(check==0)
 			{	
-
+//				RS485rwack_1 = 1;//test
 				memcpy(Tx_Buffer, "funcNetreply\r\n", 15);	
 				Write_SOCK_Data_Buffer(0, Tx_Buffer, 15);//指定Socket(0~7)发送数据处理
 				Set_NetParam(Rx_Buffer);
 				funcNet_OCEPCtrl(Rx_Buffer);
 				funcNet_StartLearn(Rx_Buffer);
 				funcNet_StarSend(Rx_Buffer);
-//                sprintf((char *)buf, "send success!\r\n");//test
-//                USARTx_SendArray(USART2, buf, 16);//test
+                // sprintf((char *)buf, "send success!\r\n");//test
+                // USARTx_SendArray(USART2, buf, 16);//test
                 Get_NetParam();
-//				
+				RS485rwack_1 = 0;//test
 			}	
 		}
 	}

@@ -22,10 +22,10 @@ unsigned char Phy_Addr[6] = {0x00, 0x08, 0xdc, 0x11, 0x11, 0x11};	//物理地址(MAC
 unsigned char IP_Addr[4] = {192, 168, 3, 2};  //本机IP地址 
 
 unsigned char S0_Port[2] = {0x04, 0xB0};	//端口0的端口号 
-unsigned char S0_DIP[4] = {192, 168, 3, 10};	//端口0目的IP地址 
+unsigned char S0_DIP[4] = {192, 168, 3, 100};	//端口0目的IP地址 
 unsigned char S0_DPort[2] = {0x1E, 0x6B};	//端口0目的端口号
 
-unsigned char UDP_DIPR[4] = {192, 168, 3, 10};	//UDP(广播)模式,目的主机IP地址
+unsigned char UDP_DIPR[4] = {192, 168, 3, 100};	//UDP(广播)模式,目的主机IP地址
 unsigned char UDP_DPORT[2] = {0x1E, 0x6B};	//UDP(广播)模式,目的主机端口号
 
 /***************----- 默认网络参数 -----***************/
@@ -34,7 +34,7 @@ uint8_t Default_SubMask[4] = {255, 255, 255, 0};//默认子网掩码
 uint8_t Default_PhyAddr[6] = {0x00, 0x08, 0xdc, 0x11, 0x11, 0x11};//默认设备MAC
 uint8_t Default_IPAddr[4] = {192, 168, 3, 2};//默认设备IP
 uint8_t Default_S0Port[2] = {0x04, 0xB0};//默认设备端口号
-uint8_t Default_S0DIP[4] = {192, 168, 3, 10};//默认服务器IP
+uint8_t Default_S0DIP[4] = {192, 168, 3, 100};//默认服务器IP
 uint8_t Default_S0DPort[2] = {0x1E, 0x6B};//默认服务器端口号
 
 /***************----- 端口的运行模式 -----***************/
@@ -89,10 +89,10 @@ void Load_Net_Parameters(void)
 	AT24CXX_Write(20, Default_PhyAddr, 6);
 
 //	AT24CXX_Write(26, IP_Addr, 4);//写本机IP地址
-//	AT24CXX_Write(30, S0_DIP, 4);//写服务器IP地址
-//	AT24CXX_Write(34, Gateway_IP, 4);//写网关
-//	AT24CXX_Write(38, Sub_Mask, 4);//写子网掩码
-//	AT24CXX_Write(42, S0_DPort, 2);//写服务器端口
+//    AT24CXX_Write(30, S0_DIP, 4);//写服务器IP地址
+//    AT24CXX_Write(34, Gateway_IP, 4);//写网关
+//    AT24CXX_Write(38, Sub_Mask, 4);//写子网掩码
+//    AT24CXX_Write(42, S0_DPort, 2);//写服务器端口
 //	AT24CXX_Write(44, S0_Port, 2);//写设备端口
 //	AT24CXX_Write(46, Phy_Addr, 6);//写设备MAC地址
 //	

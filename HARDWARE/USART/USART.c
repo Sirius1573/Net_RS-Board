@@ -10,7 +10,6 @@
 #include "sys.h"
 #include "delay.h"
 #include "Remote.h"
-#include "W5500.h"
 #include "DataPackage.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -266,7 +265,7 @@ void USART1_IRQHandler(void)
         rx1_cnt++;
 		rx1_buf[rx1_cnt] = USART_ReceiveData(USART1);
         if((strstr((const char *)rx1_buf+1, "funcRSStartUp")))
-        {	
+        {
 			startup_flag = 1;
             USART_Channel = 0;
 			rx1_cnt=0;
@@ -300,7 +299,7 @@ void USART2_IRQHandler(void)
         rx2_cnt++;
 		rx2_buf[rx2_cnt] = USART_ReceiveData(USART2);
         if((strstr((const char *)rx2_buf+1, "funcRSStartUp")))
-		{
+        {
 			startup_flag = 1;
             USART_Channel = 0;
 			rx2_cnt=0;
@@ -336,7 +335,7 @@ void USART3_IRQHandler(void)
         rx3_cnt++;
 		rx3_buf[rx3_cnt] = USART_ReceiveData(USART3);
         if((strstr((const char *)rx3_buf+1, "funcRSStartUp")))
-		{
+        {
 			startup_flag = 1;
             USART_Channel = 0;
 			rx3_cnt=0;
@@ -372,7 +371,7 @@ void UART4_IRQHandler(void)
         rx4_cnt++;
 		rx4_buf[rx4_cnt] = USART_ReceiveData(UART4);
         if((strstr((const char *)rx4_buf+1, "funcRSStartUp")))
-		{
+        {
 			startup_flag = 1;
             USART_Channel = 0;
 			rx4_cnt=0;
@@ -393,7 +392,7 @@ void UART4_IRQHandler(void)
 				funcRS_OCEPCtrl(rx4_buf);
 				/**************************/
 				memset(rx4_buf,0,sizeof(rx4_buf));
-				RS485rwack_3 = 0;
+				RS485rwack_1 = 0;
 			}
 		}
         USART_ClearITPendingBit(UART4, USART_IT_RXNE);

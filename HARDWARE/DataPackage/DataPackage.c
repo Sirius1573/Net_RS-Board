@@ -57,7 +57,7 @@ void Online_Reminder(void)
             memcpy(Tx_Buffer, "\r\nEquipment waiting to come online\r\n", 37);
             Write_SOCK_Data_Buffer(0, Tx_Buffer, 37);//指定Socket(0~7)发送数据处理
         }
-        Delay_ms(500);
+        Delay_ms(600);
         if ((strstr((const char*)Rx_Buffer + 8, "funcNetStartUp")))
         {
             check2 = 0;
@@ -69,17 +69,10 @@ void Online_Reminder(void)
             memcpy(Tx_Buffer, "Equipment is now online\r\n", 26);
             Write_SOCK_Data_Buffer(0, Tx_Buffer, 26);//指定Socket(0~7)发送数据处理
         }
-		RS485rwack_1 = 1;
-		RS485rwack_2 = 1;
-		RS485rwack_3 = 1;
         USARTx_SendArray(USART1, Tx_Buffer, 37);
         USARTx_SendArray(USART2, Tx_Buffer, 37);
         USARTx_SendArray(USART3, Tx_Buffer, 37);
         USARTx_SendArray(UART4, Tx_Buffer, 37);
-		RS485rwack_1 = 0;
-		RS485rwack_2 = 0;
-		RS485rwack_3 = 0;
-		
         Get_NetParam();
 
     } while ((check2 || check) && USART_Channel);  //如果收到上线指令且服务器IP、端口正确，退出此循环，进入主循环
@@ -220,9 +213,6 @@ void Set_NetParam(uint8_t* BUF)
             Phy_Addr[0], Phy_Addr[1], Phy_Addr[2], Phy_Addr[3], Phy_Addr[4], Phy_Addr[5]);/*设备MAC*/
         memcpy(Tx_Buffer, NetParam_Str, strlen((const char*)NetParam_Str));
         Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)NetParam_Str));//指定Socket(0~7)发送数据处理
-		Delay_ms(50);
-		__set_FAULTMASK(1);//软件复位stm32
-		NVIC_SystemReset();
     }
 }
 
@@ -337,15 +327,4 @@ void funcRS_OCEPCtrl(uint8_t* BUF)
         data = BUF[30] - '0';
         OCEP_OC(8, data);
     }
-}
-
-void funcNet_MesgToRS(uint8_t* BUF)
-{
-   uint8_t* p;
-   uint8_t data;
-
-   if ((strstr((const char*)BUF + 1, "funcNetMesgToRS")))
-   {
-       
-   }
 }
