@@ -1,6 +1,6 @@
 #ifndef	_W5500_H_
 #define	_W5500_H_
-
+#include "sys.h"
 /***************** Common Register *****************/
 #define MR		0x0000
 	#define RST		0x80
@@ -227,13 +227,15 @@ extern unsigned char UDP_DIPR[4];	//UDP(广播)模式,目的主机IP地址
 extern unsigned char UDP_DPORT[2];	//UDP(广播)模式,目的主机端口号
 
 /***************----- 默认网络参数 -----***************/
-extern uint8_t Default_Gateway_IP[4];// 默认网关
-extern uint8_t Default_SubMask[4];//默认子网掩码
-extern uint8_t Default_PhyAddr[6];//默认设备MAC
-extern uint8_t Default_IPAddr[4];//默认设备IP
-extern uint8_t Default_S0Port[2];//默认设备端口号
-extern uint8_t Default_S0DIP[4];//默认服务器IP
-extern uint8_t Default_S0DPort[2];//默认服务器端口号
+extern unsigned char Default_Gateway_IP[4];// 默认网关
+extern unsigned char Default_SubMask[4];//默认子网掩码
+extern unsigned char Default_PhyAddr[6];//默认设备MAC
+extern unsigned char Default_IPAddr[4];//默认设备IP
+extern unsigned char Default_S0Port[2];//默认设备端口号
+extern unsigned char Default_S0DIP[4];//默认服务器IP
+extern unsigned char Default_S0DPort[2];//默认服务器端口号
+
+
 
 /***************----- 端口的运行模式 -----***************/
 extern unsigned char S0_Mode;	//端口0的运行模式,0:TCP服务器模式,1:TCP客户端模式,2:UDP(广播)模式
@@ -254,6 +256,7 @@ extern unsigned char S0_Data;		//端口0接收和发送数据的状态,1:端口接收到数据,2:端
 /***************----- 端口数据缓冲区 -----***************/
 extern unsigned char Rx_Buffer[2048];	//端口接收数据缓冲区 
 extern unsigned char Tx_Buffer[2048];	//端口发送数据缓冲区 
+extern unsigned char w5500_rx_length;
 
 extern unsigned char W5500_Interrupt;	//W5500中断标志(0:无中断,1:有中断)
 typedef unsigned char SOCKET;			//自定义端口号数据类型

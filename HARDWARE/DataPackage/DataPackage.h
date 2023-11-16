@@ -23,6 +23,6 @@ void funcNet_SetUARTParam(uint8_t* BUF);
 void Get_USARTParam(void);
 
 void funcRS_OCEPCtrl(uint8_t* BUF);
-void funcRS_MesgToUDP(uint8_t* BUF);
+void funcRS_MesgToUDP(uint8_t* UDP_BUF, uint8_t* RS_BUF);
 
 #endif

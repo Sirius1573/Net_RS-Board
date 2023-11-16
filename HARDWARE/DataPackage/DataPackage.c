@@ -38,36 +38,38 @@ void UpLine_Mesg(void)
 {
 	
 	
-	if (check == 0 || USART_Channel == 0)  //如果收到上线指令且服务器IP、端口正确，则提示设备已经上线
+	if (check == 0 || USART_Channel == 10)  //如果收到上线指令且服务器IP、端口正确，则提示设备已经上线
 	{
 		startup_flag = 1;
-		memcpy(Tx_Buffer, "\r\nEquipment is now online\r\n", 28);
-		Write_SOCK_Data_Buffer(0, Tx_Buffer, 28);//指定Socket(0~7)发送数据处理
-		RS485rwack_1 = 1;
-		RS485rwack_2 = 1;
-		RS485rwack_3 = 1;
-        USARTx_SendString(USART1, "\r\nEquipment is now online\r\n");
-        USARTx_SendString(USART2, "\r\nEquipment is now online\r\n");
-        USARTx_SendString(USART3, "\r\nEquipment is now online\r\n");
-        USARTx_SendString(UART4, "\r\nEquipment is now online\r\n");
-        RS485rwack_1 = 0;
-		RS485rwack_2 = 0;
-		RS485rwack_3 = 0;
+        memcpy(Tx_Buffer, "\r\nEquipment is now online\r\n", 28);
+        Write_SOCK_Data_Buffer(0, Tx_Buffer, 28);//指定Socket(0~7)发送数据处理
+        memset(Tx_Buffer, 0x00, 28);
+        // RS485rwack_1 = 1;
+		// RS485rwack_2 = 1;
+		// RS485rwack_3 = 1;
+        // USARTx_SendString(USART1, "\r\nEquipment is now online\r\n");
+        // USARTx_SendString(USART2, "\r\nEquipment is now online\r\n");
+        // USARTx_SendString(USART3, "\r\nEquipment is now online\r\n");
+        // USARTx_SendString(UART4, "\r\nEquipment is now online\r\n");
+        // RS485rwack_1 = 0;
+		// RS485rwack_2 = 0;
+		// RS485rwack_3 = 0;
 	}
 	else
 	{
 		memcpy(Tx_Buffer, "\r\nEquipment waiting to come online\r\n", 37);
-		Write_SOCK_Data_Buffer(0, Tx_Buffer, 37);//指定Socket(0~7)发送数据处理
-		RS485rwack_1 = 1;
-		RS485rwack_2 = 1;
-		RS485rwack_3 = 1;
-        USARTx_SendString(USART1, "\r\nEquipment waiting to come online\r\n");
-        USARTx_SendString(USART2, "\r\nEquipment waiting to come online\r\n");
-		USARTx_SendString(USART3, "\r\nEquipment waiting to come online\r\n");
-		USARTx_SendString(UART4, "\r\nEquipment waiting to come online\r\n");
-		RS485rwack_1 = 0;
-		RS485rwack_2 = 0;
-		RS485rwack_3 = 0;
+        Write_SOCK_Data_Buffer(0, Tx_Buffer, 37);//指定Socket(0~7)发送数据处理
+        memset(Tx_Buffer, 0x00, 37);
+        // RS485rwack_1 = 1;
+		// RS485rwack_2 = 1;
+		// RS485rwack_3 = 1;
+        // USARTx_SendString(USART1, "\r\nEquipment waiting to come online\r\n");
+        // USARTx_SendString(USART2, "\r\nEquipment waiting to come online\r\n");
+		// USARTx_SendString(USART3, "\r\nEquipment waiting to come online\r\n");
+		// USARTx_SendString(UART4, "\r\nEquipment waiting to come online\r\n");
+		// RS485rwack_1 = 0;
+		// RS485rwack_2 = 0;
+		// RS485rwack_3 = 0;
 	}
 	
 }
@@ -98,7 +100,7 @@ void Online_Reminder(void)
         Get_NetParam();
         Get_USARTParam();
 
-    } while (check && USART_Channel);  //如果收到上线指令且服务器IP、端口正确，退出此循环，进入主循环
+    } while (check);  //如果收到上线指令且服务器IP、端口正确，退出此循环，进入主循环
 }
 
 /*********************************************************
@@ -226,6 +228,7 @@ void Set_NetParam(uint8_t* BUF)
         Delay_ms(50);
         memcpy(Tx_Buffer, "Parameter modification succeeded\r\n", 35);
         Write_SOCK_Data_Buffer(0, Tx_Buffer, 35);//指定Socket(0~7)发送数据处理
+        memset(Tx_Buffer, 0x00, 35);
         sprintf((char*)NetParam_Str, "NowParam:%d.%d.%d.%d, %d.%d.%d.%d, %d.%d.%d.%d, %d.%d.%d.%d, %d, %d, %02x:%02x:%02x:%02x:%02x:%02x",
             IP_Addr[0], IP_Addr[1], IP_Addr[2], IP_Addr[3],/*设备IP*/
             S0_DIP[0], S0_DIP[1], S0_DIP[2], S0_DIP[3],/*服务器IP*/
@@ -236,7 +239,8 @@ void Set_NetParam(uint8_t* BUF)
             Phy_Addr[0], Phy_Addr[1], Phy_Addr[2], Phy_Addr[3], Phy_Addr[4], Phy_Addr[5]);/*设备MAC*/
         memcpy(Tx_Buffer, NetParam_Str, strlen((const char*)NetParam_Str));
         Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)NetParam_Str));//指定Socket(0~7)发送数据处理
-		Delay_ms(50);
+        memset(Tx_Buffer, 0x00, 200);
+        Delay_ms(50);
 		__set_FAULTMASK(1);//软件复位stm32
 		NVIC_SystemReset();
     }
@@ -252,7 +256,7 @@ void Get_NetParam(void)
     //查询网络参数
     if ((strstr((const char*)Rx_Buffer + 8, "funcNetGetParam")))
     {   /*输出格式：设备IP，服务器IP，网关，子网掩码，服务器端口，设备端口，设备MAC*/
-        sprintf((char*)NetParam_Str, "NowParam:%d.%d.%d.%d, %d.%d.%d.%d, %d.%d.%d.%d, %d.%d.%d.%d, %d, %d, %02x:%02x:%02x:%02x:%02x:%02x",
+        sprintf((char*)NetParam_Str, "UDPNowParam:%d.%d.%d.%d, %d.%d.%d.%d, %d.%d.%d.%d, %d.%d.%d.%d, %d, %d, %02x:%02x:%02x:%02x:%02x:%02x",
             IP_Addr[0], IP_Addr[1], IP_Addr[2], IP_Addr[3],/*设备IP*/
             S0_DIP[0], S0_DIP[1], S0_DIP[2], S0_DIP[3],/*服务器IP*/
             Gateway_IP[0], Gateway_IP[1], Gateway_IP[2], Gateway_IP[3],/*网关*/
@@ -262,6 +266,7 @@ void Get_NetParam(void)
             Phy_Addr[0], Phy_Addr[1], Phy_Addr[2], Phy_Addr[3], Phy_Addr[4], Phy_Addr[5]);/*设备MAC*/
         memcpy(Tx_Buffer, NetParam_Str, strlen((const char*)NetParam_Str));
         Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)NetParam_Str));//指定Socket(0~7)发送数据处理
+        memset(Tx_Buffer, 0x00, 200);
     }
 }
 
@@ -374,23 +379,22 @@ void funcNet_MesgToRS(uint8_t* BUF)
 
         if (data == 1 || data == 2 || data == 3)
         {
-            Mesg_Length = strlen((const char*)BUF + 26);//计算需转发消息的长度
-            udp_rx_buf = (uint8_t*)malloc(Mesg_Length * sizeof(uint8_t));//创建动态内存
-            for (i = 26;i <= Mesg_Length + 25;i++)//将UDP接收数据存入转发数组中
+            udp_rx_buf = (uint8_t*)malloc((w5500_rx_length-8) * sizeof(uint8_t));//创建动态内存
+            for (i = 26;i <= (w5500_rx_length-8) + 25;i++)//将UDP接收数据存入转发数组中
             {
                 udp_rx_buf[i - 26] = BUF[i];
             }
             if (data == 1)
             {
-                USARTx_SendArray(USART2, udp_rx_buf, Mesg_Length);//通过232发送 
+                USARTx_SendArray(USART2, udp_rx_buf, w5500_rx_length-26);//通过232发送 
             }
             if (data == 2)
             {
-                USARTx_SendArray(USART3, udp_rx_buf, Mesg_Length);//通过232发送
+                USARTx_SendArray(USART3, udp_rx_buf, w5500_rx_length-26);//通过232发送
             }
             if (data == 3)
             {
-                USARTx_SendArray(UART4, udp_rx_buf, Mesg_Length);//通过232发送
+                USARTx_SendArray(UART4, udp_rx_buf, w5500_rx_length-26);//通过232发送
             }
         }
         else
@@ -398,6 +402,7 @@ void funcNet_MesgToRS(uint8_t* BUF)
             sprintf((char*)mesg_Str, "Channel is not exist");
             memcpy(Tx_Buffer, mesg_Str, strlen((const char*)mesg_Str));
             Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)mesg_Str));//指定Socket(0~7)发送数据处理
+            memset(Tx_Buffer, 0x00, 50);
         }
         
         memset(Rx_Buffer,0,2048);//清空UDP缓存
@@ -405,20 +410,48 @@ void funcNet_MesgToRS(uint8_t* BUF)
     }
 }
 
-/**
- * @brief RS232转发至UDP
- * @param {uint8_t*} BUF —— 控制命令，网络接收
- * @return None
- */
-void funcRS_MesgToUDP(uint8_t* BUF)
+void funcRS_MesgToUDP(uint8_t * UDP_BUF,uint8_t* RS_BUF)
 {
-    if ((strstr((const char*)BUF, "funcRSMesgToUDP:")))//命令检测
+    uint8_t data_length = 0;
+    uint8_t* p;
+    static uint8_t open_channel[3] = {0,0,0};
+
+
+    if (strstr((const char*)UDP_BUF + 8, "funcNetOpenRStoUDP"))
     {
-        Mesg_Length = strlen((const char*)BUF + 15);//计算需转发消息的长度
-                  
-        memcpy(Tx_Buffer, BUF+16, Mesg_Length);
-        Write_SOCK_Data_Buffer(0, Tx_Buffer, Mesg_Length);//指定Socket(0~7)发送数据处理
+		
+        p = (uint8_t*)((strstr((const char*)UDP_BUF + 8, "funcNetOpenRStoUDP")) + strlen("funcNetOpenRStoUDP"));
+
+        p = (u8*)(strstr((const char*)p, ":") + strlen(":"));
+        open_channel[0] = atoi((const char*)p);//通道开关
+
+        p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+        open_channel[1] = atoi((const char*)p);//通道开关
+
+        p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+        open_channel[2] = atoi((const char*)p);//通道开关
     }
+
+    if (USART_Channel == 2 && open_channel[0] == 1)
+    {
+        data_length = rx2_cnt;
+    }
+    else if (USART_Channel == 3 && open_channel[1] == 1)
+    {
+        data_length = rx3_cnt;
+    }
+    else if (USART_Channel == 4 && open_channel[2] == 1)
+    {
+        data_length = rx4_cnt;
+    }
+    if (USART_Channel && (open_channel[0] || open_channel[1] || open_channel[2]))
+	{
+		sprintf((char *)Tx_Buffer,"Message from RS%d:",USART_Channel-1);
+		memcpy(Tx_Buffer+17, RS_BUF, data_length+17);
+		Write_SOCK_Data_Buffer(0, Tx_Buffer, data_length+17);//指定Socket(0~7)发送数据处理
+		memset(Tx_Buffer, 0x00, 2048);
+	}
+	
 }
 
 void funcNet_SetUARTParam(uint8_t* BUF)
@@ -546,14 +579,15 @@ void funcNet_SetUARTParam(uint8_t* BUF)
             }
             sprintf((char*)mesg_Str, "Set Param Finish!\r\n");
             memcpy(Tx_Buffer, mesg_Str, strlen((const char*)mesg_Str));
-
             Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)mesg_Str));//指定Socket(0~7)发送数据处理
+            memset(Tx_Buffer, 0x00, 20);
         }
         else
         {
             sprintf((char*)mesg_Str, "Param Error!\r\n");
             memcpy(Tx_Buffer, mesg_Str, strlen((const char*)mesg_Str));
             Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)mesg_Str));//指定Socket(0~7)发送数据处理
+            memset(Tx_Buffer, 0x00, 15);
         }
     }
 }
@@ -571,5 +605,6 @@ void Get_USARTParam(void)
             Buad_Tab[2], UART4_Config.USART_Param_Index[0], UART4_Config.USART_Param_Index[1], UART4_Config.USART_Param_Index[2], UART4_Config.USART_Param_Index[3]);
         memcpy(Tx_Buffer, NetParam_Str, strlen((const char*)NetParam_Str));
         Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)NetParam_Str));//指定Socket(0~7)发送数据处理
+        memset(Tx_Buffer, 0x00, 100);
     }
 }

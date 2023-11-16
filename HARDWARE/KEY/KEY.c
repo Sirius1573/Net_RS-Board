@@ -96,6 +96,9 @@ void TIM3_IRQHandler(void)
  *********************************************************/
 uint8_t Device_Init(void)
 {
+	uint8_t i;
+	uint16_t dataToWrite[2];
+	
 	AT24C512_Write2Byte(98,IR_CodeStartAddr,1);
 	AT24C512_Read2Byte(98, Last_DataEAddr, 1);
 	
@@ -133,6 +136,23 @@ uint8_t Device_Init(void)
     AT24CXX_Write(44, Default_S0Port, 2);//更改存储当前设备端口为默认默认端口
     AT24CXX_Read(44, S0_Port, 2);//读出设备端口
 	
+	AT24CXX_Write(55, USART2_Config.USART_Param_Index, 4);
+	AT24CXX_Write(59, USART3_Config.USART_Param_Index, 4);
+	AT24CXX_Write(63, UART4_Config.USART_Param_Index, 4);
+	for (i = 0;i <= 2;i++)
+	{
+		dataToWrite[0] = (uint16_t)(9600 & 0xFFFF);         // 最低 16 位
+		dataToWrite[1] = (uint16_t)((9600 >> 16) & 0xFFFF);  // 高 16 位
+		AT24C512_Write2Byte(67 + 4 * i, dataToWrite, 2);
+	}
+	AT24CXX_Read(55, USART2_Config.USART_Param_Index, 4);
+	AT24CXX_Read(59, USART3_Config.USART_Param_Index, 4);
+	AT24CXX_Read(63, UART4_Config.USART_Param_Index, 4);
+	for (i = 0;i <= 2;i++)
+	{
+		AT24C512_Read2Byte(67 + 4 * i, dataToWrite, 2);
+		Buad_Tab[i] = ((uint32_t)dataToWrite[1] << 16) | (uint32_t)dataToWrite[0];
+	}
     Delay_ms(50);
 	
     memcpy(Tx_Buffer,"The device has been initialized\r\n", 34);	
@@ -141,7 +161,7 @@ uint8_t Device_Init(void)
     USARTx_SendArray(USART3, Tx_Buffer, 34);
     USARTx_SendArray(UART4, Tx_Buffer, 34);
     Write_SOCK_Data_Buffer(0, Tx_Buffer, 34);//指定Socket(0~7)发送数据处理
-    sprintf((char *)NetParam_Str, "NowParam:%d.%d.%d.%d, %d.%d.%d.%d, %d.%d.%d.%d, %d.%d.%d.%d, %d, %d, %02x:%02x:%02x:%02x:%02x:%02x",
+    sprintf((char *)NetParam_Str, "UDPNowParam:\r\n%d.%d.%d.%d\r\n%d.%d.%d.%d\r\n%d.%d.%d.%d\r\n%d.%d.%d.%d\r\n%d\r\n%d\r\n%02x:%02x:%02x:%02x:%02x:%02x\r\n",
                 IP_Addr[0],IP_Addr[1],IP_Addr[2],IP_Addr[3],/*设备IP*/
                 S0_DIP[0],S0_DIP[1],S0_DIP[2],S0_DIP[3],/*服务器IP*/
                 Gateway_IP[0],Gateway_IP[1],Gateway_IP[2],Gateway_IP[3],/*网关*/
@@ -149,8 +169,17 @@ uint8_t Device_Init(void)
                 S0_DPort[0]*256+S0_DPort[1],/*服务器IP端口*/
                 S0_Port[0]*256+S0_Port[1],/*设备端口*/
                 Phy_Addr[0],Phy_Addr[1],Phy_Addr[2],Phy_Addr[3],Phy_Addr[4],Phy_Addr[5]);/*设备MAC*/
+
     memcpy(Tx_Buffer,NetParam_Str, strlen((const char *)NetParam_Str));	
     Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char *)NetParam_Str));//指定Socket(0~7)发送数据处理
+	sprintf((char*)NetParam_Str,
+            "RSNowParam:\r\nRS_CH1{%d,%d,%d,%d,%d}\r\nRS_CH2{%d,%d,%d,%d,%d}\r\nRS_CH3{%d,%d,%d,%d,%d}\r\n",
+            Buad_Tab[0], USART2_Config.USART_Param_Index[0], USART2_Config.USART_Param_Index[1], USART2_Config.USART_Param_Index[2], USART2_Config.USART_Param_Index[3],
+            Buad_Tab[1], USART3_Config.USART_Param_Index[0], USART3_Config.USART_Param_Index[1], USART3_Config.USART_Param_Index[2], USART3_Config.USART_Param_Index[3],
+            Buad_Tab[2], UART4_Config.USART_Param_Index[0], UART4_Config.USART_Param_Index[1], UART4_Config.USART_Param_Index[2], UART4_Config.USART_Param_Index[3]);
+	memcpy(Tx_Buffer, NetParam_Str, strlen((const char*)NetParam_Str));
+	Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)NetParam_Str));//指定Socket(0~7)发送数据处理
+	memset(Tx_Buffer, 0x00, 100);
     Delay_ms(50);
     __set_FAULTMASK(1);//软件复位stm32
     NVIC_SystemReset();

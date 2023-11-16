@@ -85,9 +85,12 @@ int main(void)
 				funcNet_StartLearn(Rx_Buffer);
 				funcNet_StarSend(Rx_Buffer);
 				funcNet_MesgToRS(Rx_Buffer);
+				funcRS_MesgToUDP(Rx_Buffer, "0");
 				funcNet_SetUARTParam(Rx_Buffer);
 				Get_NetParam();
 				Get_USARTParam();
+				memset(Rx_Buffer,0x00,2048);
+				w5500_rx_length=0;
 			}
 		}
 		USART_Proce();

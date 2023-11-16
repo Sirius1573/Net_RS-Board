@@ -29,7 +29,7 @@
 ..\obj\w5500.o: ..\FWLIB\inc\stm32f10x_wwdg.h
 ..\obj\w5500.o: ..\FWLIB\inc\misc.h
 ..\obj\w5500.o: ..\HARDWARE\W5500\W5500.h
+..\obj\w5500.o: ..\SYSTEM\sys\sys.h
 ..\obj\w5500.o: D:\Software\KeilMDK\ARM\ARMCC\Bin\..\include\string.h
 ..\obj\w5500.o: ..\SYSTEM\delay\delay.h
-..\obj\w5500.o: ..\SYSTEM\sys\sys.h
 ..\obj\w5500.o: ..\HARDWARE\AT24C512\24cxx.h

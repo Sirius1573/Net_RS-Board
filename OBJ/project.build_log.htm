@@ -21,39 +21,41 @@ Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.9.0
 Dialog DLL:      TCM.DLL V1.53.0.0
  
 <h2>Project:</h2>
-E:\Electronics\老师项目\通信板卡\code_V3\USER\Project.uvprojx
+E:\Electronics\老师项目\通信板卡\code\USER\Project.uvprojx
 Project File Date:  07/26/2023
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\KeilMDK\ARM\ARMCC\Bin'
 Build target 'complete'
-compiling KEY.c...
-compiling main.c...
-main.c(59): warning:  #177-D: variable "buf"  was declared but never referenced
-  		uint8_t buf[20];
-main.c: 1 warning, 0 errors
 compiling USART.c...
+..\HARDWARE\USART\USART.c(382): warning:  #550-D: variable "clear"  was set but never used
+  	uint16_t clear;
+..\HARDWARE\USART\USART.c(400): warning:  #550-D: variable "clear"  was set but never used
+  	uint16_t clear;
+..\HARDWARE\USART\USART.c(418): warning:  #550-D: variable "clear"  was set but never used
+  	uint16_t clear;
+..\HARDWARE\USART\USART.c: 3 warnings, 0 errors
 compiling DataPackage.c...
-..\HARDWARE\DataPackage\DataPackage.c(81): warning:  #177-D: variable "flag"  was declared but never referenced
+..\HARDWARE\DataPackage\DataPackage.c(83): warning:  #177-D: variable "flag"  was declared but never referenced
       uint8_t flag=0;
-..\HARDWARE\DataPackage\DataPackage.c(326): warning:  #177-D: variable "p"  was declared but never referenced
+..\HARDWARE\DataPackage\DataPackage.c(331): warning:  #177-D: variable "p"  was declared but never referenced
       uint8_t* p;
-..\HARDWARE\DataPackage\DataPackage.c(365): warning:  #177-D: variable "p"  was declared but never referenced
+..\HARDWARE\DataPackage\DataPackage.c(370): warning:  #177-D: variable "p"  was declared but never referenced
       uint8_t* p;
-..\HARDWARE\DataPackage\DataPackage.c(484): warning:  #186-D: pointless comparison of unsigned integer with zero
+..\HARDWARE\DataPackage\DataPackage.c(517): warning:  #186-D: pointless comparison of unsigned integer with zero
           if ((channel >= 1 && channel <= 3) && (wordlength >= 0 && wordlength <= 1)&&
-..\HARDWARE\DataPackage\DataPackage.c(485): warning:  #186-D: pointless comparison of unsigned integer with zero
+..\HARDWARE\DataPackage\DataPackage.c(518): warning:  #186-D: pointless comparison of unsigned integer with zero
               (stopbits >= 0 && stopbits <= 3) && (Parity >= 0 && Parity <= 2) &&
-..\HARDWARE\DataPackage\DataPackage.c(486): warning:  #186-D: pointless comparison of unsigned integer with zero
+..\HARDWARE\DataPackage\DataPackage.c(519): warning:  #186-D: pointless comparison of unsigned integer with zero
               (HardwareFlowControl >= 0 && HardwareFlowControl <= 3))
-..\HARDWARE\DataPackage\DataPackage.c(437): warning:  #177-D: variable "USART_InitStructure"  was declared but never referenced
+..\HARDWARE\DataPackage\DataPackage.c(470): warning:  #177-D: variable "USART_InitStructure"  was declared but never referenced
       USART_InitTypeDef USART_InitStructure;
-..\HARDWARE\DataPackage\DataPackage.c(575): warning:  #1-D: last line of file ends without a newline
+..\HARDWARE\DataPackage\DataPackage.c(610): warning:  #1-D: last line of file ends without a newline
   }
 ..\HARDWARE\DataPackage\DataPackage.c: 8 warnings, 0 errors
 linking...
-Program Size: Code=27970 RO-data=1046 RW-data=204 ZI-data=9324  
-"..\OBJ\project.axf" - 0 Error(s), 9 Warning(s).
+Program Size: Code=28010 RO-data=1258 RW-data=208 ZI-data=9320  
+"..\OBJ\project.axf" - 0 Error(s), 11 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -66,7 +68,7 @@ Package Vendor: Keil
   D:\Software\KeilMDK\Keil\STM32F1xx_DFP\2.4.1\Device\Include
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:00
 </pre>
 </body>
 </html>

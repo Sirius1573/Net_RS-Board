@@ -32,13 +32,14 @@ unsigned char UDP_DIPR[4] = {192, 168, 3, 100};	//UDP(¹ã²¥)Ä£Ê½,Ä¿µÄÖ÷»úIPµØÖ·
 unsigned char UDP_DPORT[2] = {0x1E, 0x6B};	//UDP(¹ã²¥)Ä£Ê½,Ä¿µÄÖ÷»ú¶Ë¿ÚºÅ
 
 /***************----- Ä¬ÈÏÍøÂç²ÎÊý -----***************/
-uint8_t Default_Gateway_IP[4] = {192, 168, 3, 1};//Ä¬ÈÏÍø¹Ø
-uint8_t Default_SubMask[4] = {255, 255, 255, 0};//Ä¬ÈÏ×ÓÍøÑÚÂë
-uint8_t Default_PhyAddr[6] = {0x00, 0x08, 0xdc, 0x11, 0x11, 0x11};//Ä¬ÈÏÉè±¸MAC
-uint8_t Default_IPAddr[4] = {192, 168, 3, 2};//Ä¬ÈÏÉè±¸IP
-uint8_t Default_S0Port[2] = {0x04, 0xB0};//Ä¬ÈÏÉè±¸¶Ë¿ÚºÅ
-uint8_t Default_S0DIP[4] = {192, 168, 3, 100};//Ä¬ÈÏ·þÎñÆ÷IP
-uint8_t Default_S0DPort[2] = {0x1E, 0x6B};//Ä¬ÈÏ·þÎñÆ÷¶Ë¿ÚºÅ
+unsigned char Default_Gateway_IP[4] = {192, 168, 3, 1};//Ä¬ÈÏÍø¹Ø
+unsigned char Default_SubMask[4] = {255, 255, 255, 0};//Ä¬ÈÏ×ÓÍøÑÚÂë
+unsigned char Default_PhyAddr[6] = {0x00, 0x08, 0xdc, 0x11, 0x11, 0x11};//Ä¬ÈÏÉè±¸MAC
+unsigned char Default_IPAddr[4] = {192, 168, 3, 2};//Ä¬ÈÏÉè±¸IP
+unsigned char Default_S0Port[2] = {0x04, 0xB0};//Ä¬ÈÏÉè±¸¶Ë¿ÚºÅ
+unsigned char Default_S0DIP[4] = {192, 168, 3, 100};//Ä¬ÈÏ·þÎñÆ÷IP
+unsigned char Default_S0DPort[2] = {0x1E, 0x6B};//Ä¬ÈÏ·þÎñÆ÷¶Ë¿ÚºÅ
+unsigned char w5500_rx_length = 0;
 
 /***************----- ¶Ë¿ÚµÄÔËÐÐÄ£Ê½ -----***************/
 unsigned char S0_Mode =3;	//¶Ë¿Ú0µÄÔËÐÐÄ£Ê½,0:TCP·þÎñÆ÷Ä£Ê½,1:TCP¿Í»§¶ËÄ£Ê½,2:UDP(¹ã²¥)Ä£Ê½
@@ -59,6 +60,7 @@ unsigned char S0_Data;		//¶Ë¿Ú0½ÓÊÕºÍ·¢ËÍÊý¾ÝµÄ×´Ì¬,1:¶Ë¿Ú½ÓÊÕµ½Êý¾Ý,2:¶Ë¿Ú·¢ËÍÊ
 /***************----- ¶Ë¿ÚÊý¾Ý»º³åÇø -----***************/
 unsigned char Rx_Buffer[2048];	//¶Ë¿Ú½ÓÊÕÊý¾Ý»º³åÇø 
 unsigned char Tx_Buffer[2048];	//¶Ë¿Ú·¢ËÍÊý¾Ý»º³åÇø 
+
 
 unsigned char W5500_Interrupt;	//W5500ÖÐ¶Ï±êÖ¾(0:ÎÞÖÐ¶Ï,1:ÓÐÖÐ¶Ï)
 
@@ -435,7 +437,8 @@ unsigned short Read_SOCK_Data_Buffer(SOCKET s, unsigned char *dat_ptr)
 
 	rx_size=Read_W5500_SOCK_2Byte(s,Sn_RX_RSR);
 	if(rx_size==0) return 0;//Ã»½ÓÊÕµ½Êý¾ÝÔò·µ»Ø
-	if(rx_size>1460) rx_size=1460;
+	if (rx_size > 1460) rx_size = 1460;
+	w5500_rx_length = rx_size;
 
 	offset=Read_W5500_SOCK_2Byte(s,Sn_RX_RD);
 	offset1=offset;
