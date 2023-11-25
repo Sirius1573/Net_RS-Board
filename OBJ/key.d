@@ -35,6 +35,7 @@
 ..\obj\key.o: ..\HARDWARE\W5500\w5500.h
 ..\obj\key.o: ..\HARDWARE\REMOTE\Remote.h
 ..\obj\key.o: ..\HARDWARE\DataPackage\DataPackage.h
+..\obj\key.o: ..\HARDWARE\OCEP\OCEP.h
 ..\obj\key.o: ..\HARDWARE\AT24C512\24cxx.h
 ..\obj\key.o: D:\Software\KeilMDK\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\key.o: D:\Software\KeilMDK\ARM\ARMCC\Bin\..\include\string.h

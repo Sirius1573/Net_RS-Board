@@ -27,35 +27,27 @@ Project File Date:  07/26/2023
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\KeilMDK\ARM\ARMCC\Bin'
 Build target 'complete'
-compiling USART.c...
-..\HARDWARE\USART\USART.c(382): warning:  #550-D: variable "clear"  was set but never used
-  	uint16_t clear;
-..\HARDWARE\USART\USART.c(400): warning:  #550-D: variable "clear"  was set but never used
-  	uint16_t clear;
-..\HARDWARE\USART\USART.c(418): warning:  #550-D: variable "clear"  was set but never used
-  	uint16_t clear;
-..\HARDWARE\USART\USART.c: 3 warnings, 0 errors
 compiling DataPackage.c...
 ..\HARDWARE\DataPackage\DataPackage.c(83): warning:  #177-D: variable "flag"  was declared but never referenced
       uint8_t flag=0;
-..\HARDWARE\DataPackage\DataPackage.c(331): warning:  #177-D: variable "p"  was declared but never referenced
+..\HARDWARE\DataPackage\DataPackage.c(401): warning:  #177-D: variable "p"  was declared but never referenced
       uint8_t* p;
-..\HARDWARE\DataPackage\DataPackage.c(370): warning:  #177-D: variable "p"  was declared but never referenced
+..\HARDWARE\DataPackage\DataPackage.c(440): warning:  #177-D: variable "p"  was declared but never referenced
       uint8_t* p;
-..\HARDWARE\DataPackage\DataPackage.c(517): warning:  #186-D: pointless comparison of unsigned integer with zero
+..\HARDWARE\DataPackage\DataPackage.c(587): warning:  #186-D: pointless comparison of unsigned integer with zero
           if ((channel >= 1 && channel <= 3) && (wordlength >= 0 && wordlength <= 1)&&
-..\HARDWARE\DataPackage\DataPackage.c(518): warning:  #186-D: pointless comparison of unsigned integer with zero
+..\HARDWARE\DataPackage\DataPackage.c(588): warning:  #186-D: pointless comparison of unsigned integer with zero
               (stopbits >= 0 && stopbits <= 3) && (Parity >= 0 && Parity <= 2) &&
-..\HARDWARE\DataPackage\DataPackage.c(519): warning:  #186-D: pointless comparison of unsigned integer with zero
+..\HARDWARE\DataPackage\DataPackage.c(589): warning:  #186-D: pointless comparison of unsigned integer with zero
               (HardwareFlowControl >= 0 && HardwareFlowControl <= 3))
-..\HARDWARE\DataPackage\DataPackage.c(470): warning:  #177-D: variable "USART_InitStructure"  was declared but never referenced
+..\HARDWARE\DataPackage\DataPackage.c(540): warning:  #177-D: variable "USART_InitStructure"  was declared but never referenced
       USART_InitTypeDef USART_InitStructure;
-..\HARDWARE\DataPackage\DataPackage.c(610): warning:  #1-D: last line of file ends without a newline
+..\HARDWARE\DataPackage\DataPackage.c(680): warning:  #1-D: last line of file ends without a newline
   }
 ..\HARDWARE\DataPackage\DataPackage.c: 8 warnings, 0 errors
 linking...
-Program Size: Code=28010 RO-data=1258 RW-data=208 ZI-data=9320  
-"..\OBJ\project.axf" - 0 Error(s), 11 Warning(s).
+Program Size: Code=28514 RO-data=1266 RW-data=216 ZI-data=9320  
+"..\OBJ\project.axf" - 0 Error(s), 8 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -68,7 +60,7 @@ Package Vendor: Keil
   D:\Software\KeilMDK\Keil\STM32F1xx_DFP\2.4.1\Device\Include
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

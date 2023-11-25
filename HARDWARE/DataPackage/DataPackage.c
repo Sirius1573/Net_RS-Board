@@ -256,7 +256,7 @@ void Get_NetParam(void)
     //查询网络参数
     if ((strstr((const char*)Rx_Buffer + 8, "funcNetGetParam")))
     {   /*输出格式：设备IP，服务器IP，网关，子网掩码，服务器端口，设备端口，设备MAC*/
-        sprintf((char*)NetParam_Str, "UDPNowParam:%d.%d.%d.%d, %d.%d.%d.%d, %d.%d.%d.%d, %d.%d.%d.%d, %d, %d, %02x:%02x:%02x:%02x:%02x:%02x",
+        sprintf((char*)NetParam_Str, "UDPNowParam:\r\n%d.%d.%d.%d,\r\n%d.%d.%d.%d,\r\n%d.%d.%d.%d,\r\n%d.%d.%d.%d,\r\n%d,\r\n%d,\r\n%02x:%02x:%02x:%02x:%02x:%02x",
             IP_Addr[0], IP_Addr[1], IP_Addr[2], IP_Addr[3],/*设备IP*/
             S0_DIP[0], S0_DIP[1], S0_DIP[2], S0_DIP[3],/*服务器IP*/
             Gateway_IP[0], Gateway_IP[1], Gateway_IP[2], Gateway_IP[3],/*网关*/
@@ -288,36 +288,106 @@ void funcNet_OCEPCtrl(uint8_t* BUF)
 
         p = (u8*)(strstr((const char*)p, ":") + strlen(":"));
         data = atoi((const char*)p);
-        OCEP_OC(1, data);
+        OCEP_OUT_1 = !data;
+        OCEP_State[0] = data;
 
         p = (u8*)(strstr((const char*)p, ",") + strlen(","));
         data = atoi((const char*)p);
-        OCEP_OC(2, data);
+        OCEP_OUT_2 = !data;
+        OCEP_State[1] = data;
 
         p = (u8*)(strstr((const char*)p, ",") + strlen(","));
         data = atoi((const char*)p);
-        OCEP_OC(3, data);
+        OCEP_OUT_3 = !data;
+        OCEP_State[2] = data;
 
         p = (u8*)(strstr((const char*)p, ",") + strlen(","));
         data = atoi((const char*)p);
-        OCEP_OC(4, data);
+        OCEP_OUT_4 = !data;
+        OCEP_State[3] = data;
 
         p = (u8*)(strstr((const char*)p, ",") + strlen(","));
         data = atoi((const char*)p);
-        OCEP_OC(5, data);
+        OCEP_OUT_5 = !data;
+        OCEP_State[4] = data;
 
         p = (u8*)(strstr((const char*)p, ",") + strlen(","));
         data = atoi((const char*)p);
-        OCEP_OC(6, data);
+        OCEP_OUT_6 = !data;
+        OCEP_State[5] = data;
 
         p = (u8*)(strstr((const char*)p, ",") + strlen(","));
         data = atoi((const char*)p);
-        OCEP_OC(7, data);
+        OCEP_OUT_7 = !data;
+        OCEP_State[6] = data;
 
         p = (u8*)(strstr((const char*)p, ",") + strlen(","));
         data = atoi((const char*)p);
-        OCEP_OC(8, data);
+        OCEP_OUT_8 = !data;
+        OCEP_State[7] = data;
     }
+
+    if ((strstr((const char*)BUF + 8, "funcNetOCEPSet")))
+    {
+        data = 0x00;
+        p = (uint8_t*)((strstr((const char*)BUF + 8, "funcNetOCEPSet")) + strlen("funcNetOCEPSet"));
+
+        p = (u8*)(strstr((const char*)p, ":") + strlen(":"));
+        data = atoi((const char*)p);
+
+        switch (data)
+        {
+        case 1:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_1 = !data;
+            OCEP_State[0] = data;
+            break;
+        case 2:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_2 = !data;
+            OCEP_State[1] = data;
+            break;
+        case 3:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_3 = !data;
+            OCEP_State[2] = data;
+            break;
+        case 4:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_4 = !data;
+            OCEP_State[3] = data;
+            break;
+        case 5:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_5 = !data;
+            OCEP_State[4] = data;
+            break;
+        case 6:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_6 = !data;
+            OCEP_State[5] = data;
+            break;
+        case 7:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_7 = !data;
+            OCEP_State[6] = data;
+            break;
+        case 8:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_8 = !data;
+            OCEP_State[7] = data;
+            break;
+        }
+    }
+    AT24CXX_Write(0, OCEP_State, 8);
 }
 
 /*********************************************************

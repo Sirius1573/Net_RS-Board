@@ -30,10 +30,10 @@ int main(void)
 	PWR_WakeUpPinCmd(DISABLE);   //½ûÖ¹WKUP¹¦ÄÜ
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	Delay_init();
-	OCEP_Init();
+	AT24CXX_Init();
 	SCIO_Init();
 	Key_Init();
-	AT24CXX_Init();
+	OCEP_Init();
 	Load_USART_Param();
 	USART1_Init(115200);
     USART2_Init(Buad_Tab[0]);

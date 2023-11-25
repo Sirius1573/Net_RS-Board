@@ -86,13 +86,13 @@ void Load_Net_Parameters(void)
 	//存储顺序：设备IP,服务器IP，网关，子网掩码，服务器端口，设备端口，MAC地址!
 	//存储顺序：设备IP,服务器IP，网关，子网掩码，服务器端口，设备端口，MAC地址!
 	/****写默认参数****/
-    AT24CXX_Write(0, Default_IPAddr, 4);
-	AT24CXX_Write(4, Default_S0DIP, 4);
-	AT24CXX_Write(8, Default_Gateway_IP, 4);
-	AT24CXX_Write(12, Default_SubMask, 4);
-	AT24CXX_Write(16, Default_S0DPort, 2);
-	AT24CXX_Write(18, Default_S0Port, 2);
-	AT24CXX_Write(20, Default_PhyAddr, 6);
+    // AT24CXX_Write(0, Default_IPAddr, 4);
+	// AT24CXX_Write(4, Default_S0DIP, 4);
+	// AT24CXX_Write(8, Default_Gateway_IP, 4);
+	// AT24CXX_Write(12, Default_SubMask, 4);
+	// AT24CXX_Write(16, Default_S0DPort, 2);
+	// AT24CXX_Write(18, Default_S0Port, 2);
+	// AT24CXX_Write(20, Default_PhyAddr, 6);
 	
 	AT24CXX_Read(26, eeprom_test, 2);
 	

@@ -13,6 +13,7 @@
 #include "w5500.h"
 #include "Remote.h"
 #include "DataPackage.h"
+#include "OCEP.h"
 #include "24cxx.h"
 #include <stdlib.h>
 #include <string.h>
@@ -118,6 +119,7 @@ uint8_t Device_Init(void)
     AT24CXX_Write(26, Default_IPAddr, 4);//更改存储当前设备IP为默认设备IP
     AT24CXX_Read(26, IP_Addr, 4);//读出设备IP
 
+
     S0_DIP[0]=Default_S0DIP[0];
     S0_DIP[1]=Default_S0DIP[1];
     S0_DIP[2]=Default_S0DIP[2];
@@ -153,7 +155,11 @@ uint8_t Device_Init(void)
 		AT24C512_Read2Byte(67 + 4 * i, dataToWrite, 2);
 		Buad_Tab[i] = ((uint32_t)dataToWrite[1] << 16) | (uint32_t)dataToWrite[0];
 	}
+	
+	AT24CXX_Write(0, OCEP_State, 8);
+	
     Delay_ms(50);
+	
 	
     memcpy(Tx_Buffer,"The device has been initialized\r\n", 34);	
     USARTx_SendArray(USART1,Tx_Buffer,34);

@@ -159,7 +159,7 @@
           <Type>0</Type>
           <LineNumber>103</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134230234</Address>
+          <Address>134230460</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -173,9 +173,9 @@
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>382</LineNumber>
+          <LineNumber>292</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134241304</Address>
+          <Address>134241804</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -184,39 +184,7 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>E:\Electronics\鑰佸笀椤圭洰\閫氫俊鏉垮崱\code\HARDWARE\DataPackage\DataPackage.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\project\../HARDWARE/DataPackage/DataPackage.c\382</Expression>
-        </Bp>
-        <Bp>
-          <Number>2</Number>
-          <Type>0</Type>
-          <LineNumber>387</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134241344</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>E:\Electronics\鑰佸笀椤圭洰\閫氫俊鏉垮崱\code\HARDWARE\DataPackage\DataPackage.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression>\\project\../HARDWARE/DataPackage/DataPackage.c\387</Expression>
-        </Bp>
-        <Bp>
-          <Number>3</Number>
-          <Type>0</Type>
-          <LineNumber>104</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>0</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>..\HARDWARE\W5500\W5500.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
+          <Expression>\\project\../HARDWARE/DataPackage/DataPackage.c\292</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -319,6 +287,11 @@
           <count>19</count>
           <WinNumber>1</WinNumber>
           <ItemText>w5500_rx_length,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>20</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>OCEP_State</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

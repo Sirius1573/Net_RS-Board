@@ -30,3 +30,4 @@
 ..\obj\ocep.o: ..\FWLIB\inc\misc.h
 ..\obj\ocep.o: ..\HARDWARE\OCEP\OCEP.h
 ..\obj\ocep.o: ..\SYSTEM\sys\sys.h
+..\obj\ocep.o: ..\HARDWARE\AT24C512\24cxx.h
