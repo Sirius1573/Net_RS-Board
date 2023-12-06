@@ -21,6 +21,8 @@ uint8_t check = 1;
 uint8_t check2 = 1;
 uint8_t tset[2];
 uint16_t Mesg_Length = 0;
+uint16_t Tick_Count = 0;
+uint8_t Send_Mode = 0;
 /*********************************************************
  * @brief 服务器IP及端口检查函数
  * @return None
@@ -32,22 +34,28 @@ void Address_Check(void)
     {
         check = 0;  //如果实际IP、端口与定义IP、端口相同则置0
     }
+    else if (WIFI_UpLineFlag == 1)
+	{
+		check = 0;
+	}
 }
 
 void UpLine_Mesg(void)
 {
 	
 	
-	if (check == 0 || USART_Channel == 10)  //如果收到上线指令且服务器IP、端口正确，则提示设备已经上线
-	{
-		startup_flag = 1;
+	if (check == 0)  //如果收到上线指令且服务器IP、端口正确，则提示设备已经上线
+    {
+        startup_flag = 1;
+		USARTx_SendString(USART1, "\r\nEquipment is now online\r\n");
         memcpy(Tx_Buffer, "\r\nEquipment is now online\r\n", 28);
         Write_SOCK_Data_Buffer(0, Tx_Buffer, 28);//指定Socket(0~7)发送数据处理
         memset(Tx_Buffer, 0x00, 28);
+   
         // RS485rwack_1 = 1;
 		// RS485rwack_2 = 1;
 		// RS485rwack_3 = 1;
-        // USARTx_SendString(USART1, "\r\nEquipment is now online\r\n");
+        // 
         // USARTx_SendString(USART2, "\r\nEquipment is now online\r\n");
         // USARTx_SendString(USART3, "\r\nEquipment is now online\r\n");
         // USARTx_SendString(UART4, "\r\nEquipment is now online\r\n");
@@ -56,14 +64,19 @@ void UpLine_Mesg(void)
 		// RS485rwack_3 = 0;
 	}
 	else
-	{
-		memcpy(Tx_Buffer, "\r\nEquipment waiting to come online\r\n", 37);
-        Write_SOCK_Data_Buffer(0, Tx_Buffer, 37);//指定Socket(0~7)发送数据处理
-        memset(Tx_Buffer, 0x00, 37);
-        // RS485rwack_1 = 1;
+    {
+        if (Tick_Count == 80)
+        {
+            Tick_Count = 0;
+			USARTx_SendString(USART1, "\r\nEquipment waiting to come online\r\n");
+            memcpy(Tx_Buffer, "\r\nEquipment waiting to come online\r\n", 37);
+            Write_SOCK_Data_Buffer(0, Tx_Buffer, 37);//指定Socket(0~7)发送数据处理
+            memset(Tx_Buffer, 0x00, 37);
+        }
+            // RS485rwack_1 = 1;
 		// RS485rwack_2 = 1;
 		// RS485rwack_3 = 1;
-        // USARTx_SendString(USART1, "\r\nEquipment waiting to come online\r\n");
+        
         // USARTx_SendString(USART2, "\r\nEquipment waiting to come online\r\n");
 		// USARTx_SendString(USART3, "\r\nEquipment waiting to come online\r\n");
 		// USARTx_SendString(UART4, "\r\nEquipment waiting to come online\r\n");
@@ -80,7 +93,6 @@ void UpLine_Mesg(void)
  *********************************************************/
 void Online_Reminder(void)
 {
-    uint8_t flag=0;
     do
     {
         Key_State();
@@ -93,12 +105,13 @@ void Online_Reminder(void)
         W5500_Interrupt_Process();//W5500中断处理程序框架 
 		Process_Socket_Data(0);		
         S0_Data &= ~S_RECEIVE;
-        Delay_ms(500);
+        Delay_ms(10);
+        Tick_Count++;
+
         Address_Check();    //检查是否为指定服务器IP端口发送
-        
         UpLine_Mesg();
-        Get_NetParam();
-        Get_USARTParam();
+        Get_NetParam(Rx_Buffer);
+        Get_USARTParam(Rx_Buffer);
 
     } while (check);  //如果收到上线指令且服务器IP、端口正确，退出此循环，进入主循环
 }
@@ -250,11 +263,11 @@ void Set_NetParam(uint8_t* BUF)
  * @brief 网络参数获取函数
  * @return None
  *********************************************************/
-void Get_NetParam(void)
+void Get_NetParam(uint8_t* BUF)
 {
-    uint8_t NetParam_Str[1024];
+    uint8_t NetParam_Str[110];
     //查询网络参数
-    if ((strstr((const char*)Rx_Buffer + 8, "funcNetGetParam")))
+    if ((strstr((const char*)BUF + 8, "funcNetGetParam")))
     {   /*输出格式：设备IP，服务器IP，网关，子网掩码，服务器端口，设备端口，设备MAC*/
         sprintf((char*)NetParam_Str, "UDPNowParam:\r\n%d.%d.%d.%d,\r\n%d.%d.%d.%d,\r\n%d.%d.%d.%d,\r\n%d.%d.%d.%d,\r\n%d,\r\n%d,\r\n%02x:%02x:%02x:%02x:%02x:%02x",
             IP_Addr[0], IP_Addr[1], IP_Addr[2], IP_Addr[3],/*设备IP*/
@@ -266,7 +279,7 @@ void Get_NetParam(void)
             Phy_Addr[0], Phy_Addr[1], Phy_Addr[2], Phy_Addr[3], Phy_Addr[4], Phy_Addr[5]);/*设备MAC*/
         memcpy(Tx_Buffer, NetParam_Str, strlen((const char*)NetParam_Str));
         Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)NetParam_Str));//指定Socket(0~7)发送数据处理
-        memset(Tx_Buffer, 0x00, 200);
+        memset(Tx_Buffer, 0x00, 110);
     }
 }
 
@@ -396,38 +409,118 @@ void funcNet_OCEPCtrl(uint8_t* BUF)
  *        示例：funcNetOCEPCtrl,1,0,1,1,0,1,0,0 —— 1号继电器开，2号继电器关......
  * @return None
  *********************************************************/
-void funcRS_OCEPCtrl(uint8_t* BUF)
+void funcWIFI_OCEPCtrl(uint8_t* BUF)
 {
     uint8_t* p;
     uint8_t data;
 
-    if ((strstr((const char*)BUF, "funcRSOCEPCtrl:")))
+    if ((strstr((const char*)BUF, "funcWIFIOCEPCtrl")))
     {
         data = 0x00;
-        data = BUF[15] - '0';
-        OCEP_OC(1, data);
+        p = (uint8_t*)((strstr((const char*)BUF, "funcWIFIOCEPCtrl")) + strlen("funcWIFIOCEPCtrl"));
 
-        data = BUF[17] - '0';
-        OCEP_OC(2, data);
+        p = (u8*)(strstr((const char*)p, ":") + strlen(":"));
+        data = atoi((const char*)p);
+        OCEP_OUT_1 = !data;
+        OCEP_State[0] = data;
 
-        data = BUF[19] - '0';
-        OCEP_OC(3, data);
+        p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+        data = atoi((const char*)p);
+        OCEP_OUT_2 = !data;
+        OCEP_State[1] = data;
 
-        data = BUF[21] - '0';
-        OCEP_OC(4, data);
+        p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+        data = atoi((const char*)p);
+        OCEP_OUT_3 = !data;
+        OCEP_State[2] = data;
 
-        data = BUF[23] - '0';
-        OCEP_OC(5, data);
+        p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+        data = atoi((const char*)p);
+        OCEP_OUT_4 = !data;
+        OCEP_State[3] = data;
 
-        data = BUF[25] - '0';
-        OCEP_OC(6, data);
+        p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+        data = atoi((const char*)p);
+        OCEP_OUT_5 = !data;
+        OCEP_State[4] = data;
 
-        data = BUF[27] - '0';
-        OCEP_OC(7, data);
+        p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+        data = atoi((const char*)p);
+        OCEP_OUT_6 = !data;
+        OCEP_State[5] = data;
 
-        data = BUF[29] - '0';
-        OCEP_OC(8, data);
+        p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+        data = atoi((const char*)p);
+        OCEP_OUT_7 = !data;
+        OCEP_State[6] = data;
+
+        p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+        data = atoi((const char*)p);
+        OCEP_OUT_8 = !data;
+        OCEP_State[7] = data;
     }
+
+    if ((strstr((const char*)BUF, "funcWIFIOCEPSet")))
+    {
+        data = 0x00;
+        p = (uint8_t*)((strstr((const char*)BUF, "funcWIFIOCEPSet")) + strlen("funcWIFIOCEPSet"));
+
+        p = (u8*)(strstr((const char*)p, ":") + strlen(":"));
+        data = atoi((const char*)p);
+
+        switch (data)
+        {
+        case 1:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_1 = !data;
+            OCEP_State[0] = data;
+            break;
+        case 2:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_2 = !data;
+            OCEP_State[1] = data;
+            break;
+        case 3:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_3 = !data;
+            OCEP_State[2] = data;
+            break;
+        case 4:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_4 = !data;
+            OCEP_State[3] = data;
+            break;
+        case 5:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_5 = !data;
+            OCEP_State[4] = data;
+            break;
+        case 6:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_6 = !data;
+            OCEP_State[5] = data;
+            break;
+        case 7:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_7 = !data;
+            OCEP_State[6] = data;
+            break;
+        case 8:
+            p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+            data = atoi((const char*)p);
+            OCEP_OUT_8 = !data;
+            OCEP_State[7] = data;
+            break;
+        }
+    }
+    AT24CXX_Write(0, OCEP_State, 8);
 }
 
 /**
@@ -437,7 +530,6 @@ void funcRS_OCEPCtrl(uint8_t* BUF)
  */
 void funcNet_MesgToRS(uint8_t* BUF)
 {
-    uint8_t* p;
     uint8_t* udp_rx_buf;
 	uint16_t i;
     uint8_t data;
@@ -480,46 +572,117 @@ void funcNet_MesgToRS(uint8_t* BUF)
     }
 }
 
-void funcRS_MesgToUDP(uint8_t * UDP_BUF,uint8_t* RS_BUF)
+void funcWIFI_MesgToRS(uint8_t* BUF)
+{
+    uint8_t* wifi_rx_buf;
+    uint16_t i;
+    uint8_t data;
+    uint8_t mesg_Str[20];
+
+    if ((strstr((const char*)BUF, "funcWIFIMesgToRS")))//命令检测
+    {
+        data = BUF[17] - '0';//获取232通道
+
+        if (data == 1 || data == 2 || data == 3)
+        {
+            wifi_rx_buf = (uint8_t*)malloc(rx1_cnt);//创建动态内存
+            for (i = 19;i <= (rx1_cnt)+18;i++)//将UDP接收数据存入转发数组中
+            {
+                wifi_rx_buf[i - 19] = BUF[i];
+            }
+            if (data == 1)
+            {
+                USARTx_SendArray(USART2, wifi_rx_buf, rx1_cnt - 19);//通过232发送 
+            }
+            if (data == 2)
+            {
+                USARTx_SendArray(USART3, wifi_rx_buf, rx1_cnt - 19);//通过232发送
+            }
+            if (data == 3)
+            {
+                USARTx_SendArray(UART4, wifi_rx_buf, rx1_cnt - 19);//通过232发送
+            }
+        }
+        else
+        {
+            sprintf((char*)mesg_Str, "Channel is not exist");
+            memcpy(Tx_Buffer, mesg_Str, strlen((const char*)mesg_Str));
+            USARTx_SendString(USART1, (char*)wifi_rx_buf);
+            memset(Tx_Buffer, 0x00, 50);
+        }
+        free(wifi_rx_buf);//释放内存
+    }
+}
+
+void funcNet_MesgToUDP(uint8_t * UDP_BUF,uint8_t* BUF_FROM_RS)
 {
     uint8_t data_length = 0;
     uint8_t* p;
-    static uint8_t open_channel[3] = {0,0,0};
-
+    uint8_t wifi_tx_buf[500];
+    static uint8_t net_open_channel[3] = { 0,0,0 };
+    static uint8_t wifi_open_channel[3] = { 0,0,0 };
 
     if (strstr((const char*)UDP_BUF + 8, "funcNetOpenRStoUDP"))
     {
-		
+        Send_Mode = 1;
         p = (uint8_t*)((strstr((const char*)UDP_BUF + 8, "funcNetOpenRStoUDP")) + strlen("funcNetOpenRStoUDP"));
 
         p = (u8*)(strstr((const char*)p, ":") + strlen(":"));
-        open_channel[0] = atoi((const char*)p);//通道开关
+        net_open_channel[0] = atoi((const char*)p);//通道开关
 
         p = (u8*)(strstr((const char*)p, ",") + strlen(","));
-        open_channel[1] = atoi((const char*)p);//通道开关
+        net_open_channel[1] = atoi((const char*)p);//通道开关
 
         p = (u8*)(strstr((const char*)p, ",") + strlen(","));
-        open_channel[2] = atoi((const char*)p);//通道开关
+        net_open_channel[2] = atoi((const char*)p);//通道开关
     }
 
-    if (USART_Channel == 2 && open_channel[0] == 1)
+    if (strstr((const char*)UDP_BUF, "funcWIFIOpenRStoUDP"))
+    {
+        Send_Mode = 2;
+        p = (uint8_t*)((strstr((const char*)UDP_BUF, "funcWIFIOpenRStoUDP")) + strlen("funcWIFIOpenRStoUDP"));
+
+        p = (u8*)(strstr((const char*)p, ":") + strlen(":"));
+        wifi_open_channel[0] = atoi((const char*)p);//通道开关
+
+        p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+        wifi_open_channel[1] = atoi((const char*)p);//通道开关
+
+        p = (u8*)(strstr((const char*)p, ",") + strlen(","));
+        wifi_open_channel[2] = atoi((const char*)p);//通道开关
+    }
+
+    if (USART_Channel == 2 && (net_open_channel[0] == 1 || wifi_open_channel[0] == 1))
     {
         data_length = rx2_cnt;
     }
-    else if (USART_Channel == 3 && open_channel[1] == 1)
+    else if (USART_Channel == 3 && (net_open_channel[1] == 1 || wifi_open_channel[1] == 1))
     {
         data_length = rx3_cnt;
     }
-    else if (USART_Channel == 4 && open_channel[2] == 1)
+    else if (USART_Channel == 4 && (net_open_channel[2] == 1 || wifi_open_channel[2] == 1))
     {
         data_length = rx4_cnt;
     }
-    if (USART_Channel && (open_channel[0] || open_channel[1] || open_channel[2]))
-	{
-		sprintf((char *)Tx_Buffer,"Message from RS%d:",USART_Channel-1);
-		memcpy(Tx_Buffer+17, RS_BUF, data_length+17);
-		Write_SOCK_Data_Buffer(0, Tx_Buffer, data_length+17);//指定Socket(0~7)发送数据处理
-		memset(Tx_Buffer, 0x00, 2048);
+
+    if (USART_Channel && (net_open_channel[0] || net_open_channel[1] || net_open_channel[2]
+        || wifi_open_channel[0] || wifi_open_channel[1] || wifi_open_channel[2]))
+    {
+        if (Send_Mode == 1)
+        {
+            sprintf((char*)Tx_Buffer, "Message from RS%d:", USART_Channel - 1);
+            memcpy(Tx_Buffer + 17, BUF_FROM_RS, data_length + 17);
+            Write_SOCK_Data_Buffer(0, Tx_Buffer, data_length + 17);//指定Socket(0~7)发送数据处理
+            memset(Tx_Buffer, 0x00, data_length + 17);
+        }
+        else if (Send_Mode == 2)
+        {
+            sprintf((char*)wifi_tx_buf, "Message from RS%d:", USART_Channel - 1);
+            memcpy(wifi_tx_buf + 17, BUF_FROM_RS, data_length + 17);
+            USARTx_SendString(USART1, (char *)wifi_tx_buf);
+            memset(wifi_tx_buf, 0x00, data_length + 17);
+        }
+
 	}
 	
 }
@@ -527,6 +690,7 @@ void funcRS_MesgToUDP(uint8_t * UDP_BUF,uint8_t* RS_BUF)
 void funcNet_SetUARTParam(uint8_t* BUF)
 {
     uint8_t* p;
+    uint8_t tx_buf[30];
     uint8_t channel = 0;
     uint32_t Baudrate = 0;
     uint8_t wordlength = 0;
@@ -535,13 +699,31 @@ void funcNet_SetUARTParam(uint8_t* BUF)
     uint8_t HardwareFlowControl = 0;
     uint8_t mesg_Str[20];
     uint16_t dataToWrite[2];
-	uint16_t dataRead[2];
-
-    USART_InitTypeDef USART_InitStructure;
+    uint16_t dataRead[2];
+    uint8_t set_mode;
 
     if ((strstr((const char*)BUF + 8, "funcNetSetUARTParam")))
     {
-        p = (uint8_t*)((strstr((const char*)BUF + 8, "funcNetSetUARTParam")) + strlen("funcNetSetUARTParam"));
+        set_mode = 1;
+    }
+    else if ((strstr((const char*)BUF, "funcWIFISetUARTParam")))
+    {
+        set_mode = 2;
+    }
+    else
+    {
+        set_mode = 0;
+    }
+    if (set_mode!=0)
+    {
+        if (set_mode == 1)
+        {
+            p = (uint8_t*)((strstr((const char*)BUF + 8, "funcNetSetUARTParam")) + strlen("funcNetSetUARTParam"));
+        }
+        else if (set_mode == 2)
+        {
+            p = (uint8_t*)((strstr((const char*)BUF, "funcWIFISetUARTParam")) + strlen("funcWIFISetUARTParam"));
+        }
 
         /*********************选择需要配置的串口，关闭中断************************/
         p = (u8*)(strstr((const char*)p, ":") + strlen(":"));
@@ -604,8 +786,8 @@ void funcNet_SetUARTParam(uint8_t* BUF)
                 AT24CXX_Write(55, USART2_Config.USART_Param_Index, 4);
                 AT24CXX_Read(55, USART2_Config.USART_Param_Index, 4);
                 USART2_Init(Buad_Tab[0]);
-                sprintf((char*)mesg_Str, "Set Param Finish!\r\n");
-                USARTx_SendArray(USART2, mesg_Str, 20);//通过232发送 
+                // sprintf((char*)mesg_Str, "Set Param Finish!\r\n");
+                // USARTx_SendArray(USART2, mesg_Str, 20);//通过232发送 
                 break;
 
             case 2:
@@ -622,8 +804,8 @@ void funcNet_SetUARTParam(uint8_t* BUF)
                 AT24CXX_Write(59, USART3_Config.USART_Param_Index, 4);
                 AT24CXX_Read(59, USART3_Config.USART_Param_Index, 4);
                 USART3_Init(Buad_Tab[1]);
-                sprintf((char*)mesg_Str, "Set Param Finish!\r\n");
-                USARTx_SendArray(USART3, mesg_Str, 20);//通过232发送 
+                // sprintf((char*)mesg_Str, "Set Param Finish!\r\n");
+                // USARTx_SendArray(USART3, mesg_Str, 20);//通过232发送 
                 break;
 
             case 3:
@@ -640,33 +822,58 @@ void funcNet_SetUARTParam(uint8_t* BUF)
                 AT24CXX_Write(63, UART4_Config.USART_Param_Index, 4);
                 AT24CXX_Read(63, UART4_Config.USART_Param_Index, 4);
                 USART2_Init(Buad_Tab[2]);
-                sprintf((char*)mesg_Str, "Set Param Finish!\r\n");
-                USARTx_SendArray(UART4, mesg_Str, 20);//通过232发送 
+                // sprintf((char*)mesg_Str, "Set Param Finish!\r\n");
+                // USARTx_SendArray(UART4, mesg_Str, 20);//通过232发送 
                 break;
 
             default:
                 break;
             }
-            sprintf((char*)mesg_Str, "Set Param Finish!\r\n");
-            memcpy(Tx_Buffer, mesg_Str, strlen((const char*)mesg_Str));
-            Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)mesg_Str));//指定Socket(0~7)发送数据处理
-            memset(Tx_Buffer, 0x00, 20);
+            
+            
+            if (set_mode == 1)
+            {
+                sprintf((char*)mesg_Str, "Set Param Finish!\r\n");
+                memcpy(Tx_Buffer, mesg_Str, strlen((const char*)mesg_Str));
+                Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)mesg_Str));//指定Socket(0~7)发送数据处理
+                memset(Tx_Buffer, 0x00, 20);
+            }
+            else if (set_mode == 2)
+            {
+                sprintf((char*)mesg_Str, "Set Param Finish!\r\n");
+                memcpy(tx_buf, mesg_Str, strlen((const char*)mesg_Str));
+                USARTx_SendString(USART1, (char*)tx_buf);
+                memset(tx_buf, 0x00, 20);
+            }
+                
         }
         else
         {
-            sprintf((char*)mesg_Str, "Param Error!\r\n");
-            memcpy(Tx_Buffer, mesg_Str, strlen((const char*)mesg_Str));
-            Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)mesg_Str));//指定Socket(0~7)发送数据处理
-            memset(Tx_Buffer, 0x00, 15);
+            
+            if (set_mode == 1)
+            {
+                sprintf((char*)mesg_Str, "Param Error!\r\n");
+                memcpy(Tx_Buffer, mesg_Str, strlen((const char*)mesg_Str));
+                Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)mesg_Str));//指定Socket(0~7)发送数据处理
+                memset(Tx_Buffer, 0x00, 15);
+            }
+            else if (set_mode == 2)
+            {
+                sprintf((char*)mesg_Str, "Param Error!\r\n");
+                memcpy(tx_buf, mesg_Str, strlen((const char*)mesg_Str));
+                USARTx_SendString(USART1, (char*)tx_buf);
+                memset(tx_buf, 0x00, 15);
+            }
         }
     }
 }
 
-void Get_USARTParam(void)
+void Get_USARTParam(uint8_t* BUF)
 {
-    uint8_t NetParam_Str[1024];
+    uint8_t NetParam_Str[100];
+    uint8_t tx_buf[100];
     //查询网络参数
-    if ((strstr((const char*)Rx_Buffer + 8, "funcNetGetRSParam")))
+    if ((strstr((const char*)BUF + 8, "funcNetGetRSParam")))
     {   
         sprintf((char*)NetParam_Str,
             "RSNowParam:\r\nRS_CH1{%d,%d,%d,%d,%d}\r\nRS_CH2{%d,%d,%d,%d,%d}\r\nRS_CH3{%d,%d,%d,%d,%d}\r\n",
@@ -676,5 +883,31 @@ void Get_USARTParam(void)
         memcpy(Tx_Buffer, NetParam_Str, strlen((const char*)NetParam_Str));
         Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)NetParam_Str));//指定Socket(0~7)发送数据处理
         memset(Tx_Buffer, 0x00, 100);
+    }
+
+    if ((strstr((const char*)BUF, "funcWIFIGetRSParam")))
+    {
+        sprintf((char*)NetParam_Str,
+            "RSNowParam:\r\nRS_CH1{%d,%d,%d,%d,%d}\r\nRS_CH2{%d,%d,%d,%d,%d}\r\nRS_CH3{%d,%d,%d,%d,%d}\r\n",
+            Buad_Tab[0], USART2_Config.USART_Param_Index[0], USART2_Config.USART_Param_Index[1], USART2_Config.USART_Param_Index[2], USART2_Config.USART_Param_Index[3],
+            Buad_Tab[1], USART3_Config.USART_Param_Index[0], USART3_Config.USART_Param_Index[1], USART3_Config.USART_Param_Index[2], USART3_Config.USART_Param_Index[3],
+            Buad_Tab[2], UART4_Config.USART_Param_Index[0], UART4_Config.USART_Param_Index[1], UART4_Config.USART_Param_Index[2], UART4_Config.USART_Param_Index[3]);
+        memcpy(tx_buf, NetParam_Str, strlen((const char*)NetParam_Str));
+        USARTx_SendString(USART1, (char*)tx_buf);
+        memset(tx_buf, 0x00, 100);
+    }
+}
+
+void func_Rest(uint8_t* BUF)
+{
+    if ((strstr((const char*)BUF + 8, "funcNetRest")))
+    {
+        __set_FAULTMASK(1);//软件复位stm32
+        NVIC_SystemReset();
+    }
+    if ((strstr((const char*)BUF, "funcWIFIRest")))
+    {
+        __set_FAULTMASK(1);//软件复位stm32
+        NVIC_SystemReset();
     }
 }

@@ -16,8 +16,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "e:/Electronics/老师项目/通信板卡/code/HARDWARE/DataPackage",
-      "program": "e:/Electronics/老师项目/通信板卡/code/HARDWARE/DataPackage/build/Debug/outDebug",
+      "cwd": "e:/Electronics/老师项目/通信板卡/code/HARDWARE/ESP01",
+      "program": "e:/Electronics/老师项目/通信板卡/code/HARDWARE/ESP01/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

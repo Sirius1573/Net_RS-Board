@@ -15,7 +15,9 @@
 #include "24cxx.h"
 #include "DataPackage.h"
 #include "KEY.h"
+#include "Timer.h"
 #include "24cxx.h"
+#include "ESP01.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,12 +53,12 @@ int main(void)
 	Detect_Gateway();
 	Socket_Init(0);
 	Online_Reminder();
+	TIM2_Int_Init();
 	// AT24C512_Write2Byte(98,IR_CodeStartAddr,1);
 	AT24C512_Read2Byte(98, Last_DataEAddr, 1);
 
 	while(1)
 	{
-		uint8_t buf[20];
 		Key_State();
 		W5500_Socket_Set();//W5500端口初始化配置
 		W5500_Interrupt_Process();//W5500中断处理程序框架
@@ -67,9 +69,9 @@ int main(void)
 			Device_Init();	//恢复出厂设置
 			Online_Reminder();
 		}
-		RS485rwack_1 = 0;
-		RS485rwack_2 = 0;
-		RS485rwack_3 = 0;
+		// RS485rwack_1 = 0;
+		// RS485rwack_2 = 0;
+		// RS485rwack_3 = 0;
 		if (((S0_Data & S_RECEIVE) == S_RECEIVE))//如果Socket0接收到数据
 		{
 			Process_Socket_Data(0);
@@ -85,11 +87,14 @@ int main(void)
 				funcNet_StartLearn(Rx_Buffer);
 				funcNet_StarSend(Rx_Buffer);
 				funcNet_MesgToRS(Rx_Buffer);
-				funcRS_MesgToUDP(Rx_Buffer, "0");
+				funcNet_MesgToUDP(Rx_Buffer, "0");
 				funcNet_SetUARTParam(Rx_Buffer);
-				Get_NetParam();
-				Get_USARTParam();
-				memset(Rx_Buffer,0x00,2048);
+				func_Rest(Rx_Buffer);
+				Get_NetParam(Rx_Buffer);
+				Get_USARTParam(Rx_Buffer);
+				Set_WIFIParam(Rx_Buffer, rx1_buf);
+				ESP_Restore(Rx_Buffer);
+				memset(Rx_Buffer, 0x00, 2048);
 				w5500_rx_length=0;
 			}
 		}

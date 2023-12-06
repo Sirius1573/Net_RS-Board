@@ -35,6 +35,8 @@
 "..\obj\scio.o"
 "..\obj\key.o"
 "..\obj\datapackage.o"
+"..\obj\esp01.o"
+"..\obj\timer.o"
 "..\obj\delay.o"
 "..\obj\sys.o"
 --strict --scatter "..\OBJ\project.sct"

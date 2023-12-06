@@ -157,126 +157,126 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>103</LineNumber>
+          <LineNumber>291</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134230460</Address>
+          <Address>134237158</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>E:\Electronics\鑰佸笀椤圭洰\閫氫俊鏉垮崱\code\HARDWARE\W5500\W5500.c</Filename>
+          <Filename>E:\Electronics\鑰佸笀椤圭洰\閫氫俊鏉垮崱\code\HARDWARE\ESP01\ESP01.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\project\../HARDWARE/W5500/W5500.c\103</Expression>
+          <Expression>\\project\../HARDWARE/ESP01/ESP01.c\291</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>292</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>134241804</Address>
+          <LineNumber>288</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>0</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>E:\Electronics\鑰佸笀椤圭洰\閫氫俊鏉垮崱\code\HARDWARE\DataPackage\DataPackage.c</Filename>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\HARDWARE\ESP01\ESP01.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\project\../HARDWARE/DataPackage/DataPackage.c\292</Expression>
+          <Expression></Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>arr_length,0x0A</ItemText>
+          <ItemText>S0_DIP,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
           <WinNumber>1</WinNumber>
-          <ItemText>PulseTab[0],0x0A</ItemText>
+          <ItemText>IP_Addr,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>2</count>
           <WinNumber>1</WinNumber>
-          <ItemText>S0_DIP,0x0A</ItemText>
+          <ItemText>channel,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>3</count>
           <WinNumber>1</WinNumber>
-          <ItemText>IP_Addr,0x0A</ItemText>
+          <ItemText>rx1_buf,0x10</ItemText>
         </Ww>
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Last_DataEAddr,0x0A</ItemText>
+          <ItemText>check</ItemText>
         </Ww>
         <Ww>
           <count>5</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Send_DataTab,0x0A</ItemText>
+          <ItemText>USART_Channel,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>6</count>
           <WinNumber>1</WinNumber>
-          <ItemText>start_addr,0x0A</ItemText>
+          <ItemText>Buad_Tab,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>7</count>
           <WinNumber>1</WinNumber>
-          <ItemText>data_length,0x0A</ItemText>
+          <ItemText>Send_Mode</ItemText>
         </Ww>
         <Ww>
           <count>8</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rx2_buf,0x10</ItemText>
+          <ItemText>Timer_Count,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rx3_buf</ItemText>
+          <ItemText>WIFI_Config_Flag,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rx4_buf,0x0A</ItemText>
+          <ItemText>Config_State,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>channel,0x0A</ItemText>
+          <ItemText>WIFI_SSID</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rx1_buf</ItemText>
+          <ItemText>WIFI_PASSWORD</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>1</WinNumber>
-          <ItemText>check</ItemText>
+          <ItemText>ESP_IP</ItemText>
         </Ww>
         <Ww>
           <count>14</count>
           <WinNumber>1</WinNumber>
-          <ItemText>rx2_cnt,0x0A</ItemText>
+          <ItemText>ESP_MAC</ItemText>
         </Ww>
         <Ww>
           <count>15</count>
           <WinNumber>1</WinNumber>
-          <ItemText>USART_Channel,0x0A</ItemText>
+          <ItemText>ESP_Port,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>16</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Buad_Tab,0x0A</ItemText>
+          <ItemText>WIFI_IP</ItemText>
         </Ww>
         <Ww>
           <count>17</count>
           <WinNumber>1</WinNumber>
-          <ItemText>Tx_Buffer</ItemText>
+          <ItemText>WIFI_Port,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>18</count>
@@ -286,12 +286,12 @@
         <Ww>
           <count>19</count>
           <WinNumber>1</WinNumber>
-          <ItemText>w5500_rx_length,0x0A</ItemText>
+          <ItemText>send_buf</ItemText>
         </Ww>
         <Ww>
           <count>20</count>
           <WinNumber>1</WinNumber>
-          <ItemText>OCEP_State</ItemText>
+          <ItemText>p1</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -808,6 +808,30 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+    <File>
+      <GroupNumber>4</GroupNumber>
+      <FileNumber>37</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\HARDWARE\ESP01\ESP01.c</PathWithFileName>
+      <FilenameWithoutPath>ESP01.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>4</GroupNumber>
+      <FileNumber>38</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\HARDWARE\TIMER\Timer.c</PathWithFileName>
+      <FilenameWithoutPath>Timer.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
   </Group>
 
   <Group>
@@ -818,7 +842,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>5</GroupNumber>
-      <FileNumber>37</FileNumber>
+      <FileNumber>39</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -830,7 +854,7 @@
     </File>
     <File>
       <GroupNumber>5</GroupNumber>
-      <FileNumber>38</FileNumber>
+      <FileNumber>40</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>

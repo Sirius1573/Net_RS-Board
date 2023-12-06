@@ -12,6 +12,7 @@
 #include "Remote.h"
 #include "W5500.h"
 #include "DataPackage.h"
+#include "ESP01.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,23 +21,25 @@
 
 uint8_t USART1_RxFlag;
 uint8_t USART1_RxState = 0;//状态机步骤标志位
-uint8_t rx1_cnt;
-uint8_t rx1_buf[100];
+uint16_t rx1_cnt;
+uint8_t rx1_buf[1024];
+uint8_t WIFI_UpLineFlag = 0;
+_Bool WIFI_CommandFlag = 0;
 
 uint8_t USART2_RxFlag;
 uint8_t USART2_RxState = 0;//状态机步骤标志位
-uint8_t rx2_cnt;
-uint8_t rx2_buf[100];
+uint16_t rx2_cnt;
+uint8_t rx2_buf[1024];
 
 uint8_t USART3_RxFlag;
 uint8_t USART3_RxState = 0;//状态机步骤标志位
-uint8_t rx3_cnt;
-uint8_t rx3_buf[100];
+uint16_t rx3_cnt;
+uint8_t rx3_buf[1024];
 
 uint8_t UART4_RxFlag;
 uint8_t USART4_RxState = 0;//状态机步骤标志位
-uint8_t rx4_cnt;
-uint8_t rx4_buf[100];
+uint16_t rx4_cnt;
+uint8_t rx4_buf[1024];
 
 uint8_t UART5_RxFlag;
 uint8_t rx5_cnt;
@@ -124,8 +127,8 @@ void USART1_Init(uint32_t bound)
 
 	//Usart1 NVIC 配置
 	NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=3 ;//抢占优先级3
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;		//子优先级3
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0 ;//抢占优先级3
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;		//子优先级3
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;			//IRQ通道使能
 	NVIC_Init(&NVIC_InitStructure);	//根据指定的参数初始化VIC寄存器
   
@@ -139,6 +142,7 @@ void USART1_Init(uint32_t bound)
 
 	USART_Init(USART1, &USART_InitStructure); //初始化串口1
 	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);//开启串口接受中断
+	USART_ITConfig(USART1, USART_IT_IDLE, ENABLE);//开启空闲中断
 	USART_Cmd(USART1, ENABLE);                    //使能串口1 
 }
 
@@ -331,50 +335,35 @@ void UART5_Init(uint32_t bound)
 
 void USART1_IRQHandler(void)
 {
-    if(USART_GetITStatus(USART1,USART_IT_RXNE) == SET)
-    {
-		uint8_t rx1_data;
-		USART_Channel = 1;
+	uint16_t clear;
 
-		rx1_data = USART_ReceiveData(USART1);
+	if (USART_GetITStatus(USART1, USART_IT_RXNE) == SET)
+	{
+		rx1_buf[rx1_cnt++] = USART_ReceiveData(USART1);
+		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+	}
+	else if (USART_GetITStatus(USART1, USART_IT_IDLE) != RESET)
+	{
+		USART1_RxFlag = 1;
 		if (startup_flag == 0)
 		{
-			rx1_cnt++;
-			rx1_buf[rx1_cnt] = USART_ReceiveData(USART1);
-			if (strstr((const char*)rx1_buf + 1, "funcRSStartUp\r\n"))
+			if (strstr((const char*)rx1_buf, "funcWIFIStartUp"))
 			{
-				USART_Channel = 20;
+				USART1_RxFlag = 0;
+				WIFI_UpLineFlag = 1;
+				memset(rx1_buf, 0, rx1_cnt);
 				rx1_cnt = 0;
-				memset(rx1_buf, 0, 100);
+				
 			}
-
-		}
-		if (startup_flag)
-		{
-			if (USART1_RxState == 0)
-			{
-				if (rx1_data == '\r')
-				{
-					USART1_RxState = 1;
-				}
-				else
-				{
-					rx1_buf[rx1_cnt] = rx1_data;
-					rx1_cnt++;
-				}
-			}
-			else if (USART1_RxState == 1)
-			{
-				if (rx1_data == '\n')
-				{
-					USART1_RxState = 0;
-					rx1_buf[rx1_cnt] = '\0';
-					USART1_RxFlag = 1;   //该标志位在接收数据使用后及时清理！！
-				}
+			else
+			{	
+				memset(rx1_buf, 0, rx1_cnt);
+				rx1_cnt = 0;
 			}
 		}
-		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-    }
+		clear = USART1->SR;
+		clear = USART1->DR;
+	}
 }
 
 void USART2_IRQHandler(void)
@@ -439,9 +428,9 @@ void UART5_IRQHandler(void)
 		rx5_buf[rx5_cnt] = USART_ReceiveData(UART5);
 		if(rx5_buf[rx5_cnt] == '/')
 		{
-			rx5_cnt=0;
-			funcRS_OCEPCtrl(rx5_buf);
-			memset(rx5_buf,0,sizeof(rx5_buf));
+			// rx5_cnt=0;
+			// funcRS_OCEPCtrl(rx5_buf);
+			// memset(rx5_buf,0,sizeof(rx5_buf));
 		}
         USART_ClearITPendingBit(UART5, USART_IT_RXNE);
     }
@@ -538,24 +527,35 @@ void USART5_Printf(char *format, ...)
 
 void USART_Proce(void)
 {
-	if (USART1_RxState)
+	if (USART1_RxFlag == 1)
 	{
-		USARTx_SendString(USART1, "funcRSreply\r\n\0");
-
+		if (WIFI_Config_Flag == 0)
+		{
+			USARTx_SendString(USART1, "funcWIFIreply\r\n\0");
+		}
+		
 		/****************function*****************/
-		funcRS_StartLearn(rx1_buf);
-		funcRS_MesgToUDP(Rx_Buffer,rx1_buf);
-		funcRS_OCEPCtrl(rx1_buf);
-		funcRS_StarSend(rx1_buf);
+		funcWIFI_StartLearn(rx1_buf);
+		funcWIFI_MesgToRS(rx1_buf);
+		funcNet_MesgToUDP(rx1_buf,(uint8_t *)"0");
+		funcWIFI_OCEPCtrl(rx1_buf);
+		funcWIFI_StarSend(rx1_buf);
+		funcNet_SetUARTParam(rx1_buf);
+		Get_USARTParam(rx1_buf);
+		func_Rest(rx1_buf);
+		Set_WIFIParam(Rx_Buffer, rx1_buf);
+			
 		/****************function*****************/
 
+		
+		memset(rx1_buf, 0, rx1_cnt);
 		rx1_cnt = 0;
-		memset(rx1_buf, 0, sizeof(rx1_buf));
 		USART1_RxFlag = 0;
 	}
+
 	if (USART2_RxFlag)
 	{
-		funcRS_MesgToUDP(Rx_Buffer,rx2_buf);
+		funcNet_MesgToUDP(Rx_Buffer, rx2_buf);
 		rx2_cnt = 0;
 		USART_Channel = 0;
 		memset(rx2_buf, 0, sizeof(rx2_buf));
@@ -563,7 +563,7 @@ void USART_Proce(void)
 	}
 	else if (USART3_RxFlag)
 	{
-		funcRS_MesgToUDP(Rx_Buffer, rx3_buf);
+		funcNet_MesgToUDP(Rx_Buffer, rx3_buf);
 		rx3_cnt = 0;
 		USART_Channel = 0;
 		memset(rx3_buf, 0, sizeof(rx3_buf));
@@ -571,7 +571,7 @@ void USART_Proce(void)
 	}
 	else if (UART4_RxFlag)
 	{
-		funcRS_MesgToUDP(Rx_Buffer, rx4_buf);
+		funcNet_MesgToUDP(Rx_Buffer, rx4_buf);
 		rx4_cnt = 0;
 		USART_Channel = 0;
 		memset(rx4_buf, 0, sizeof(rx4_buf));

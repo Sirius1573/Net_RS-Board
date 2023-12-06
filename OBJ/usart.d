@@ -34,6 +34,7 @@
 ..\obj\usart.o: ..\HARDWARE\REMOTE\Remote.h
 ..\obj\usart.o: ..\HARDWARE\W5500\W5500.h
 ..\obj\usart.o: ..\HARDWARE\DataPackage\DataPackage.h
+..\obj\usart.o: ..\HARDWARE\ESP01\ESP01.h
 ..\obj\usart.o: D:\Software\KeilMDK\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\usart.o: D:\Software\KeilMDK\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\usart.o: D:\Software\KeilMDK\ARM\ARMCC\Bin\..\include\string.h

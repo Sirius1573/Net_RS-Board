@@ -38,6 +38,8 @@
 ..\obj\main.o: ..\HARDWARE\AT24C512\24cxx.h
 ..\obj\main.o: ..\HARDWARE\DataPackage\DataPackage.h
 ..\obj\main.o: ..\HARDWARE\KEY\KEY.h
+..\obj\main.o: ..\HARDWARE\TIMER\Timer.h
+..\obj\main.o: ..\HARDWARE\ESP01\ESP01.h
 ..\obj\main.o: D:\Software\KeilMDK\ARM\ARMCC\Bin\..\include\string.h
 ..\obj\main.o: D:\Software\KeilMDK\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\main.o: D:\Software\KeilMDK\ARM\ARMCC\Bin\..\include\stdlib.h

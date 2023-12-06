@@ -567,7 +567,7 @@ void Write_SOCK_Data_Buffer(SOCKET s, unsigned char *dat_ptr, unsigned short siz
 void W5500_Hardware_Reset(void)
 {
 	GPIO_ResetBits(W5500_RST_PORT, W5500_RST);//复位引脚拉低
-	Delay_ms(50);
+	Delay_ms(10);
 	GPIO_SetBits(W5500_RST_PORT, W5500_RST);//复位引脚拉高
 	Delay_ms(200);
 	// while((Read_W5500_1Byte(PHYCFGR)&LINK)==0);//等待以太网连接完成

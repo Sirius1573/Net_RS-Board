@@ -9,7 +9,9 @@
     "scio.h": "c",
     "remote.h": "c",
     "w5500.h": "c",
-    "cstdlib": "c"
+    "cstdlib": "c",
+    "esp01.h": "c",
+    "timer.h": "c"
   },
   "C_Cpp_Runner.msvcBatchPath": "",
   "C_Cpp_Runner.cCompilerPath": "gcc",

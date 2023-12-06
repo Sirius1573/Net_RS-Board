@@ -21,6 +21,5 @@
 
 extern uint8_t OCEP_State[8];
 void OCEP_Init(void);
-void OCEP_OC(uint8_t x, uint8_t ack);
 
 #endif

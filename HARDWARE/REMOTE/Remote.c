@@ -110,26 +110,18 @@ void EXTI9_5_IRQHandler(void)
 		AT24C512_Read2Byte(98, Last_DataEAddr, 1);
         AT24C512_Write2Byte(Last_DataEAddr[0] + 1, PulseTab, arr_length);
         sprintf((char *)NetParam_Str, "Learn Finish!\r\nFirst Address:%d\r\nCode Length:%d\r\n", Last_DataEAddr[0]+1, arr_length);
-        memcpy(tx_buf,NetParam_Str, strlen((const char *)NetParam_Str));	
-        Write_SOCK_Data_Buffer(0, tx_buf, strlen((const char *)NetParam_Str));//指定Socket(0~7)发送数据处理 
+        memcpy(tx_buf, NetParam_Str, strlen((const char*)NetParam_Str));
 		
-        if(USART_Channel == 2)
-        {
-            USARTx_SendArray(USART2, tx_buf,  strlen((const char *)NetParam_Str));
-        }
-        else if(USART_Channel == 3)
-        {
-            USARTx_SendArray(USART3, tx_buf,  strlen((const char *)NetParam_Str));
-        }
-        else if(USART_Channel == 4)
-        {
-            USARTx_SendArray(UART4, tx_buf,  strlen((const char *)NetParam_Str));
-        }
-		else if(USART_Channel == 1)
+        if(USART_Channel == 1)
         {
             USARTx_SendArray(USART1, tx_buf,  strlen((const char *)NetParam_Str));
-        }
-        Last_DataEAddr[0] += arr_length*2;
+		}
+		else
+		{
+			
+			Write_SOCK_Data_Buffer(0, tx_buf, strlen((const char*)NetParam_Str));//指定Socket(0~7)发送数据处理 
+		}
+		Last_DataEAddr[0] += arr_length * 2;
         AT24C512_Write2Byte(98, Last_DataEAddr, 1);
         arr_length = 0;
 		
@@ -291,12 +283,12 @@ void funcNet_StartLearn(uint8_t *BUF)
  * @param {uint8_t} *BUF——串口接收到的数据
  * @return None
  *********************************************************/
-void funcRS_StartLearn(uint8_t *BUF)
+void funcWIFI_StartLearn(uint8_t *BUF)
 {
-	uint8_t buf[20];
-    if((strstr((const char *)BUF, "funcRSStartLearn")))
-    {
-        EXTI->IMR |= EXTI_Line8;   
+	if ((strstr((const char*)BUF, "funcWIFIStartLearn")))
+	{
+		WIFI_CommandFlag = 1;
+		EXTI->IMR |= EXTI_Line8;
 	}
 }
 
@@ -343,13 +335,13 @@ void funcNet_StarSend(uint8_t *BUF)
  * @param {uint8_t} *BUF——USART接收到的数据
  * @return None
  *********************************************************/
-void funcRS_StarSend(uint8_t *BUF)
+void funcWIFI_StarSend(uint8_t *BUF)
 {
     uint8_t *p;
 
-    if((strstr((const char *)BUF, "funcRSStartSend")))
+    if((strstr((const char *)BUF, "funcWIFIStartSend")))
     {
-        p = (uint8_t *)((strstr((const char *)BUF, "funcRSStartSend")) + strlen("funcRSStartSend"));
+		p = (uint8_t*)((strstr((const char*)BUF, "funcWIFIStartSend")) + strlen("funcWIFIStartSend"));
         p = (u8 *)(strstr((const char *)p,":")+strlen(":"));//发射通道
         channel = atoi((const char *)p);
 

@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\USER;..\FWLIB\inc;..\SYSTEM\sys;..\HARDWARE\OCEP;..\HARDWARE\USART;..\HARDWARE\W5500;..\SYSTEM\delay;..\HARDWARE\REMOTE;..\HARDWARE\AT24C512;..\HARDWARE\KEY;..\HARDWARE\SCIO;..\HARDWARE\DataPackage;..\SYSTEM\usart</IncludePath>
+              <IncludePath>..\CORE;..\USER;..\FWLIB\inc;..\SYSTEM\sys;..\HARDWARE\OCEP;..\HARDWARE\USART;..\HARDWARE\W5500;..\SYSTEM\delay;..\HARDWARE\REMOTE;..\HARDWARE\AT24C512;..\HARDWARE\KEY;..\HARDWARE\SCIO;..\HARDWARE\DataPackage;..\SYSTEM\usart;..\HARDWARE\ESP01;..\HARDWARE\TIMER</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -577,6 +577,16 @@
               <FileName>DataPackage.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\DataPackage\DataPackage.c</FilePath>
+            </File>
+            <File>
+              <FileName>ESP01.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\ESP01\ESP01.c</FilePath>
+            </File>
+            <File>
+              <FileName>Timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\TIMER\Timer.c</FilePath>
             </File>
           </Files>
         </Group>
