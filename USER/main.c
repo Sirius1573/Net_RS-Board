@@ -53,7 +53,7 @@ int main(void)
 	Detect_Gateway();
 	Socket_Init(0);
 	Online_Reminder();
-	TIM2_Int_Init();
+	TIM4_Int_Init();
 	// AT24C512_Write2Byte(98,IR_CodeStartAddr,1);
 	AT24C512_Read2Byte(98, Last_DataEAddr, 1);
 

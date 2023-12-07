@@ -30,6 +30,7 @@ extern uint8_t rx4_buf[1024];
 extern uint8_t rx5_cnt;
 extern uint8_t rx5_buf[100];
 extern uint8_t USART_Channel;
+extern uint8_t U_Channel;
 extern uint8_t startup_flag;
 extern uint32_t Buad_Tab[3];
 

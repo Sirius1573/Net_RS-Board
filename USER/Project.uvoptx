@@ -157,34 +157,18 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>291</LineNumber>
+          <LineNumber>38</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134237158</Address>
+          <Address>134237894</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>E:\Electronics\鑰佸笀椤圭洰\閫氫俊鏉垮崱\code\HARDWARE\ESP01\ESP01.c</Filename>
+          <Filename>E:\Electronics\鑰佸笀椤圭洰\閫氫俊鏉垮崱\code\HARDWARE\TIMER\Timer.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\project\../HARDWARE/ESP01/ESP01.c\291</Expression>
-        </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>288</LineNumber>
-          <EnabledFlag>0</EnabledFlag>
-          <Address>0</Address>
-          <ByteObject>0</ByteObject>
-          <HtxType>0</HtxType>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>0</BreakIfRCount>
-          <Filename>..\HARDWARE\ESP01\ESP01.c</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
+          <Expression>\\project\../HARDWARE/TIMER/Timer.c\38</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -292,6 +276,11 @@
           <count>20</count>
           <WinNumber>1</WinNumber>
           <ItemText>p1</ItemText>
+        </Ww>
+        <Ww>
+          <count>21</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Send_DataTab,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>

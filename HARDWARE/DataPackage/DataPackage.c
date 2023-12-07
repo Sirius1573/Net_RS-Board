@@ -242,7 +242,7 @@ void Set_NetParam(uint8_t* BUF)
         memcpy(Tx_Buffer, "Parameter modification succeeded\r\n", 35);
         Write_SOCK_Data_Buffer(0, Tx_Buffer, 35);//指定Socket(0~7)发送数据处理
         memset(Tx_Buffer, 0x00, 35);
-        sprintf((char*)NetParam_Str, "NowParam:%d.%d.%d.%d, %d.%d.%d.%d, %d.%d.%d.%d, %d.%d.%d.%d, %d, %d, %02x:%02x:%02x:%02x:%02x:%02x",
+        sprintf((char*)NetParam_Str, "NowParam:\r\n%d.%d.%d.%d,\r\n%d.%d.%d.%d,\r\n%d.%d.%d.%d,\r\n%d.%d.%d.%d,\r\n%d,\r\n%d,\r\n%02x:%02x:%02x:%02x:%02x:%02x",
             IP_Addr[0], IP_Addr[1], IP_Addr[2], IP_Addr[3],/*设备IP*/
             S0_DIP[0], S0_DIP[1], S0_DIP[2], S0_DIP[3],/*服务器IP*/
             Gateway_IP[0], Gateway_IP[1], Gateway_IP[2], Gateway_IP[3],/*网关*/

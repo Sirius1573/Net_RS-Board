@@ -4,6 +4,6 @@
 
 extern uint16_t Timer_Count;
 
-void TIM2_Int_Init(void);
+void TIM4_Int_Init(void);
 
 #endif

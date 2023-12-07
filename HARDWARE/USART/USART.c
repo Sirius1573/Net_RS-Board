@@ -47,6 +47,7 @@ uint8_t rx5_buf[100];
 
 uint8_t buf[20];
 uint8_t USART_Channel = 0;
+uint8_t U_Channel;
 uint8_t startup_flag = 0;
 uint32_t Buad_Tab[3] = { 9600,9600,9600};
 
@@ -345,6 +346,7 @@ void USART1_IRQHandler(void)
 	else if (USART_GetITStatus(USART1, USART_IT_IDLE) != RESET)
 	{
 		USART1_RxFlag = 1;
+		U_Channel = 1;
 		if (startup_flag == 0)
 		{
 			if (strstr((const char*)rx1_buf, "funcWIFIStartUp"))

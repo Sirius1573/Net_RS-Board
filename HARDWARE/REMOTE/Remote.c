@@ -112,7 +112,7 @@ void EXTI9_5_IRQHandler(void)
         sprintf((char *)NetParam_Str, "Learn Finish!\r\nFirst Address:%d\r\nCode Length:%d\r\n", Last_DataEAddr[0]+1, arr_length);
         memcpy(tx_buf, NetParam_Str, strlen((const char*)NetParam_Str));
 		
-        if(USART_Channel == 1)
+        if(U_Channel == 1)
         {
             USARTx_SendArray(USART1, tx_buf,  strlen((const char *)NetParam_Str));
 		}

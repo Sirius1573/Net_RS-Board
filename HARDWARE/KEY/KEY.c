@@ -160,7 +160,7 @@ uint8_t Device_Init(void)
 	
     Delay_ms(50);
 	
-	
+    ESP_Restore("1234567funcNetWIFIRestore");
     memcpy(Tx_Buffer,"The device has been initialized\r\n", 34);	
     USARTx_SendArray(USART1,Tx_Buffer,34);
     USARTx_SendArray(USART2, Tx_Buffer, 34);

@@ -28,7 +28,8 @@ void ESP_Restore(uint8_t* BUF)
 
     if (strstr((const char*)BUF + 8, "funcNetWIFIRestore"))
     {
-		Config_State=0;
+        TIM_Cmd(TIM4, ENABLE);
+        Config_State = 0;
         USARTx_SendString(USART1, (char*)"+++");
         Delay_ms(50);
         USARTx_SendString(USART1, (char*)"+++");
@@ -285,6 +286,7 @@ void Set_WIFIParam(uint8_t* UDP_RXBUF,uint8_t* WIFI_RXBUF)
         }
         if (Config_State == 14)
         {
+            TIM_Cmd(TIM4, DISABLE);
             sprintf((char*)send_buf,
                 "Set WIFIParam Finish!\r\nLocal IP:%s\r\nLocal Port:%d\r\nLocal MAC:%s\r\nServer IP:%d.%d.%d.%d\r\nServer Port:%d",
                 ESP_IP, ESP_Port, ESP_MAC, WIFI_IP[0], WIFI_IP[1], WIFI_IP[2], WIFI_IP[3], WIFI_Port);
