@@ -690,14 +690,14 @@ void funcNet_MesgToUDP(uint8_t * UDP_BUF,uint8_t* BUF_FROM_RS)
 void funcNet_SetUARTParam(uint8_t* BUF)
 {
     uint8_t* p;
-    uint8_t tx_buf[30];
+    uint8_t tx_buf[80];
     uint8_t channel = 0;
     uint32_t Baudrate = 0;
     uint8_t wordlength = 0;
     float stopbits = 0.0;
     uint8_t Parity = 0;
     uint8_t HardwareFlowControl = 0;
-    uint8_t mesg_Str[20];
+    uint8_t mesg_Str[80];
     uint16_t dataToWrite[2];
     uint16_t dataRead[2];
     uint8_t set_mode;
@@ -836,14 +836,14 @@ void funcNet_SetUARTParam(uint8_t* BUF)
                 sprintf((char*)mesg_Str, "Set Param Finish!\r\n");
                 memcpy(Tx_Buffer, mesg_Str, strlen((const char*)mesg_Str));
                 Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)mesg_Str));//指定Socket(0~7)发送数据处理
-                memset(Tx_Buffer, 0x00, 20);
+                memset(Tx_Buffer, 0x00, strlen((const char*)mesg_Str));
             }
             else if (set_mode == 2)
             {
                 sprintf((char*)mesg_Str, "Set Param Finish!\r\n");
                 memcpy(tx_buf, mesg_Str, strlen((const char*)mesg_Str));
                 USARTx_SendString(USART1, (char*)tx_buf);
-                memset(tx_buf, 0x00, 20);
+                memset(tx_buf, 0x00, strlen((const char*)mesg_Str));
             }
                 
         }
@@ -855,14 +855,14 @@ void funcNet_SetUARTParam(uint8_t* BUF)
                 sprintf((char*)mesg_Str, "Param Error!\r\n");
                 memcpy(Tx_Buffer, mesg_Str, strlen((const char*)mesg_Str));
                 Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)mesg_Str));//指定Socket(0~7)发送数据处理
-                memset(Tx_Buffer, 0x00, 15);
+                memset(Tx_Buffer, 0x00, strlen((const char*)mesg_Str));
             }
             else if (set_mode == 2)
             {
                 sprintf((char*)mesg_Str, "Param Error!\r\n");
                 memcpy(tx_buf, mesg_Str, strlen((const char*)mesg_Str));
                 USARTx_SendString(USART1, (char*)tx_buf);
-                memset(tx_buf, 0x00, 15);
+                memset(tx_buf, 0x00, strlen((const char*)mesg_Str));
             }
         }
     }
@@ -882,7 +882,7 @@ void Get_USARTParam(uint8_t* BUF)
             Buad_Tab[2], UART4_Config.USART_Param_Index[0], UART4_Config.USART_Param_Index[1], UART4_Config.USART_Param_Index[2], UART4_Config.USART_Param_Index[3]);
         memcpy(Tx_Buffer, NetParam_Str, strlen((const char*)NetParam_Str));
         Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)NetParam_Str));//指定Socket(0~7)发送数据处理
-        memset(Tx_Buffer, 0x00, 100);
+        memset(Tx_Buffer, 0x00, strlen((const char*)NetParam_Str));
     }
 
     if ((strstr((const char*)BUF, "funcWIFIGetRSParam")))
@@ -894,7 +894,7 @@ void Get_USARTParam(uint8_t* BUF)
             Buad_Tab[2], UART4_Config.USART_Param_Index[0], UART4_Config.USART_Param_Index[1], UART4_Config.USART_Param_Index[2], UART4_Config.USART_Param_Index[3]);
         memcpy(tx_buf, NetParam_Str, strlen((const char*)NetParam_Str));
         USARTx_SendString(USART1, (char*)tx_buf);
-        memset(tx_buf, 0x00, 100);
+        memset(tx_buf, 0x00, strlen((const char*)NetParam_Str));
     }
 }
 
