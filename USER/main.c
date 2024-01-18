@@ -54,6 +54,7 @@ int main(void)
 	Socket_Init(0);
 	Online_Reminder();
 	TIM4_Int_Init();
+	TIM_Cmd(TIM4, ENABLE);
 	// AT24C512_Write2Byte(98,IR_CodeStartAddr,1);
 	AT24C512_Read2Byte(98, Last_DataEAddr, 1);
 

@@ -1,6 +1,6 @@
 Dependencies for Project 'Project', Target 'complete': (DO NOT MODIFY !)
 CompilerVersion: 5060960::V5.06 update 7 (build 960)::.\ARMCC
-F (.\main.c)(0x65717825)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\USER -I ..\FWLIB\inc -I ..\SYSTEM\sys -I ..\HARDWARE\OCEP -I ..\HARDWARE\USART -I ..\HARDWARE\W5500 -I ..\SYSTEM\delay -I ..\HARDWARE\REMOTE -I ..\HARDWARE\AT24C512 -I ..\HARDWARE\KEY -I ..\HARDWARE\SCIO -I ..\HARDWARE\DataPackage -I ..\SYSTEM\usart -I ..\HARDWARE\ESP01 -I ..\HARDWARE\TIMER-ID:\Software\KeilMDK\Keil\STM32F1xx_DFP\2.4.1\Device\Include-D__UVISION_VERSION="536" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d)
+F (.\main.c)(0x6582D5FA)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\USER -I ..\FWLIB\inc -I ..\SYSTEM\sys -I ..\HARDWARE\OCEP -I ..\HARDWARE\USART -I ..\HARDWARE\W5500 -I ..\SYSTEM\delay -I ..\HARDWARE\REMOTE -I ..\HARDWARE\AT24C512 -I ..\HARDWARE\KEY -I ..\HARDWARE\SCIO -I ..\HARDWARE\DataPackage -I ..\SYSTEM\usart -I ..\HARDWARE\ESP01 -I ..\HARDWARE\TIMER-ID:\Software\KeilMDK\Keil\STM32F1xx_DFP\2.4.1\Device\Include-D__UVISION_VERSION="536" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d)
 I (stm32f10x.h)(0x4D783CB4)
 I (..\CORE\core_cm3.h)(0x4D523B58)
 I (D:\Software\KeilMDK\ARM\ARMCC\include\stdint.h)(0x6025237E)
@@ -1064,7 +1064,7 @@ I (..\HARDWARE\USART\USART.h)(0x657086B0)
 I (..\HARDWARE\AT24C512\24cxx.h)(0x65717896)
 I (..\HARDWARE\OCEP\OCEP.h)(0x657065B1)
 I (..\HARDWARE\KEY\KEY.h)(0x63C512C1)
-F (..\HARDWARE\ESP01\ESP01.c)(0x65717788)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\USER -I ..\FWLIB\inc -I ..\SYSTEM\sys -I ..\HARDWARE\OCEP -I ..\HARDWARE\USART -I ..\HARDWARE\W5500 -I ..\SYSTEM\delay -I ..\HARDWARE\REMOTE -I ..\HARDWARE\AT24C512 -I ..\HARDWARE\KEY -I ..\HARDWARE\SCIO -I ..\HARDWARE\DataPackage -I ..\SYSTEM\usart -I ..\HARDWARE\ESP01 -I ..\HARDWARE\TIMER-ID:\Software\KeilMDK\Keil\STM32F1xx_DFP\2.4.1\Device\Include-D__UVISION_VERSION="536" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\esp01.o --omf_browse ..\obj\esp01.crf --depend ..\obj\esp01.d)
+F (..\HARDWARE\ESP01\ESP01.c)(0x659E611F)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork --split_sections -I ..\CORE -I ..\USER -I ..\FWLIB\inc -I ..\SYSTEM\sys -I ..\HARDWARE\OCEP -I ..\HARDWARE\USART -I ..\HARDWARE\W5500 -I ..\SYSTEM\delay -I ..\HARDWARE\REMOTE -I ..\HARDWARE\AT24C512 -I ..\HARDWARE\KEY -I ..\HARDWARE\SCIO -I ..\HARDWARE\DataPackage -I ..\SYSTEM\usart -I ..\HARDWARE\ESP01 -I ..\HARDWARE\TIMER-ID:\Software\KeilMDK\Keil\STM32F1xx_DFP\2.4.1\Device\Include-D__UVISION_VERSION="536" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER-o ..\obj\esp01.o --omf_browse ..\obj\esp01.crf --depend ..\obj\esp01.d)
 I (..\USER\stm32f10x.h)(0x4D783CB4)
 I (..\CORE\core_cm3.h)(0x4D523B58)
 I (D:\Software\KeilMDK\ARM\ARMCC\include\stdint.h)(0x6025237E)

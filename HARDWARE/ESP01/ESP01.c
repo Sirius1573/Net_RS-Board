@@ -10,13 +10,15 @@
 
 char WIFI_SSID[WIFI_SSID_MAX_LENGTH];
 char WIFI_PASSWORD[WIFI_PASSWORD_MAX_LENGTH];
-char ESP_IP[15];
-char ESP_MAC[17];
+uint8_t ESP_IP[4];
+uint8_t ESP_MAC[17];
 uint16_t ESP_Port;
+
 uint8_t WIFI_IP[4];
 uint16_t WIFI_Port;
-char temp_buf[20];
-char temp_buf_two[4];
+uint8_t WIFI_Getway[4];
+uint8_t WIFI_SubMask[4];
+
 uint8_t Config_State = 0;
 uint8_t WIFI_Config_Flag = 0;
 char* ptr = NULL;
@@ -51,28 +53,56 @@ void Set_WIFIParam(uint8_t* UDP_RXBUF,uint8_t* WIFI_RXBUF)
         WIFI_Config_Flag = 1;
 		Config_State=0;
 		
+		
         p = (char *)strtok_r((char*)UDP_RXBUF+8, (const char*)":",&ptr);
 
-		p = (char *)strtok_r(NULL, (const char*)",",&ptr);//获取WIFI SSID
+		p = (char *)strtok_r(NULL, (const char*)",",&ptr);//设置WIFI SSID
 		strcpy(WIFI_SSID, p);
 
-		p = (char *)strtok_r(NULL, (const char*)",",&ptr);//获取WIFI PassWord
+        p = (char*)strtok_r(NULL, (const char*)",", &ptr);//设置WIFI PassWord
 		strcpy(WIFI_PASSWORD, p);
 
-        p = (char*)strtok_r(NULL, (const char*)".", &ptr);//获取WIFI IP
+        p = (char*)strtok_r(NULL, (const char*)".", &ptr);//设置WIFI IP
         WIFI_IP[0] = atoi((const char*)p);
-        p = (char*)strtok_r(NULL, (const char*)".", &ptr);//获取WIFI IP
+        p = (char*)strtok_r(NULL, (const char*)".", &ptr);
         WIFI_IP[1] = atoi((const char*)p);
-        p = (char*)strtok_r(NULL, (const char*)".", &ptr);//获取WIFI IP
+        p = (char*)strtok_r(NULL, (const char*)".", &ptr);
         WIFI_IP[2] = atoi((const char*)p);
-        p = (char*)strtok_r(NULL, (const char*)",", &ptr);//获取WIFI IP
+        p = (char*)strtok_r(NULL, (const char*)",", &ptr);
         WIFI_IP[3] = atoi((const char*)p);
 
-		p = (char *)strtok_r(NULL, (const char*)",",&ptr);//获取WIFI PORT
+        p = (char*)strtok_r(NULL, (const char*)",", &ptr);//设置WIFI PORT
         WIFI_Port = atoi((const char*)p);
 
-		p = (char *)strtok_r(NULL, (const char*)",",&ptr);//获取ESP PORT
+        p = (char*)strtok_r(NULL, (const char*)".", &ptr);//设置ESP IP
+        ESP_IP[0] = atoi((const char*)p);
+        p = (char*)strtok_r(NULL, (const char*)".", &ptr);
+        ESP_IP[1] = atoi((const char*)p);
+        p = (char*)strtok_r(NULL, (const char*)".", &ptr);
+        ESP_IP[2] = atoi((const char*)p);
+        p = (char*)strtok_r(NULL, (const char*)",", &ptr);
+        ESP_IP[3] = atoi((const char*)p);
+
+        p = (char*)strtok_r(NULL, (const char*)",", &ptr); //设置ESP PORT
         ESP_Port = atoi((const char*)p);
+
+        p = (char*)strtok_r(NULL, (const char*)".", &ptr);//设置WIFI 网关
+        WIFI_Getway[0] = atoi((const char*)p);
+        p = (char*)strtok_r(NULL, (const char*)".", &ptr);
+        WIFI_Getway[1] = atoi((const char*)p);
+        p = (char*)strtok_r(NULL, (const char*)".", &ptr);
+        WIFI_Getway[2] = atoi((const char*)p);
+        p = (char*)strtok_r(NULL, (const char*)",", &ptr);
+        WIFI_Getway[3] = atoi((const char*)p);
+
+        p = (char*)strtok_r(NULL, (const char*)".", &ptr);//获取WIFI IP
+        WIFI_SubMask[0] = atoi((const char*)p);
+        p = (char*)strtok_r(NULL, (const char*)".", &ptr);
+        WIFI_SubMask[1] = atoi((const char*)p);
+        p = (char*)strtok_r(NULL, (const char*)".", &ptr);
+        WIFI_SubMask[2] = atoi((const char*)p);
+        p = (char*)strtok_r(NULL, (const char*)",", &ptr);
+        WIFI_SubMask[3] = atoi((const char*)p);
     }
     if (WIFI_Config_Flag == 1)//接收到WIFI配置命令
     {
@@ -91,7 +121,7 @@ void Set_WIFIParam(uint8_t* UDP_RXBUF,uint8_t* WIFI_RXBUF)
                     Timer_Count = 0;
                     USARTx_SendString(USART1, (char*)"+++");
 					Delay_ms(100);
-					USARTx_SendString(USART1, (char*)"+++");
+                    USARTx_SendString(USART1, (char*)"+++");
                 }
             }
         }
@@ -104,6 +134,7 @@ void Set_WIFIParam(uint8_t* UDP_RXBUF,uint8_t* WIFI_RXBUF)
             }
             else
             {
+                
                 if (Timer_Count >= 10)//发送间隔100ms
                 {
 					Timer_Count = 0;
@@ -113,11 +144,40 @@ void Set_WIFIParam(uint8_t* UDP_RXBUF,uint8_t* WIFI_RXBUF)
                 }
             }
         }
-        if (Config_State == 2)//状态2：连接到指定WIFI
+        if (Config_State == 2)//状态2：
+        {
+            if (strstr((const char*)WIFI_RXBUF, "AT+CIPSTA_DEF"))//
+            {
+                Config_State = 3;//进入状态3
+                Delay_ms(120);
+            }
+            else
+            {
+                if (Timer_Count >= 10)//发送间隔100ms
+                {
+                    Timer_Count = 0;
+                    sprintf((char*)send_buf, (const char*)"AT+CIPSTA_DEF=\"%d.%d.%d.%d\",\"%d.%d.%d.%d\",\"%d.%d.%d.%d\"\r\n",
+                        ESP_IP[0], ESP_IP[1], ESP_IP[2], ESP_IP[3],
+                        WIFI_Getway[0], WIFI_Getway[1], WIFI_Getway[2], WIFI_Getway[3],
+                        WIFI_SubMask[0], WIFI_SubMask[1], WIFI_SubMask[2], WIFI_SubMask[3]);
+                    USARTx_SendString(USART1, (char*)send_buf);
+                    memset(send_buf, 0x00, 50);
+                }
+            }
+        }
+        if (Config_State == 3)
+        {
+            if (strstr((const char*)WIFI_RXBUF, "\r\nOK\r\n"))
+            {
+                Config_State = 4;//进入状态4
+				Timer_Count=800;
+            }
+        }
+        if (Config_State == 4)//状态4：连接到指定WIFI
         {
             if (strstr((const char*)WIFI_RXBUF, "WIFI GOT IP\r\n"))//获取IP
             {
-                Config_State = 3;//进入状态3
+                Config_State = 5;//进入状态5
             }
             else
             {
@@ -130,51 +190,16 @@ void Set_WIFIParam(uint8_t* UDP_RXBUF,uint8_t* WIFI_RXBUF)
                 }
             }
         }
-        if (Config_State == 3)//状态3：连接到指定WIFI成功
+        if (Config_State == 5)
         {
             if (strstr((const char*)WIFI_RXBUF, "\r\nOK\r\n"))//连接成功
             {
-                Config_State = 4;
-                Timer_Count = 10;
-                sprintf((char*)send_buf, "WIFI Connect Finish\r\n");
+                Config_State = 6;
+                Timer_Count = 25;
+				sprintf((char*)send_buf, "WIFI Connect Finish\r\n");
                 memcpy(Tx_Buffer, send_buf, strlen((const char*)send_buf));
                 Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)send_buf));//指定Socket(0~7)发送数据处理
                 memset(Tx_Buffer, 0x00, 50);
-            }
-        }
-        if (Config_State == 4)//状态4：查询模块IP
-        {
-            if (strstr((const char*)WIFI_RXBUF, "AT+CIFSR"))//收到回信，查询成功
-            {
-                Config_State = 5;
-            }
-            else
-            {
-                if (Timer_Count >= 10)//发送间隔100ms
-                {
-                    Timer_Count = 0;
-                    USARTx_SendString(USART1, (char*)"AT+CIFSR\r\n");
-                    memset(send_buf, 0x00, 10);
-                }
-            }
-        }
-        if (Config_State == 5)
-        {
-            if (strstr((const char*)WIFI_RXBUF, "\r\nOK\r\n"))//收到回信，查询成功
-            {
-                
-                p1 = (char*)strtok_r((char*)WIFI_RXBUF, (const char*)":", &ptr);
-
-                p1 = (char*)strtok_r(NULL, (const char*)"\"", &ptr);//获取WIFI SSID
-                p1 = (char*)strtok_r(NULL, (const char*)"\"", &ptr);//获取WIFI PassWord
-                strcpy(ESP_IP, p1);
-
-                p1 = (char*)strtok_r(NULL, (const char*)"\"", &ptr);//获取WIFI PassWord
-                p1 = (char*)strtok_r(NULL, (const char*)"\"", &ptr);//获取WIFI PassWord
-				strcpy(ESP_MAC, p1);
-
-                Config_State = 6;
-                Timer_Count = 25;
             }
         }
         if (Config_State == 6)
@@ -288,8 +313,8 @@ void Set_WIFIParam(uint8_t* UDP_RXBUF,uint8_t* WIFI_RXBUF)
         {
             TIM_Cmd(TIM4, DISABLE);
             sprintf((char*)send_buf,
-                "Set WIFIParam Finish!\r\nLocal IP:%s\r\nLocal Port:%d\r\nLocal MAC:%s\r\nServer IP:%d.%d.%d.%d\r\nServer Port:%d",
-                ESP_IP, ESP_Port, ESP_MAC, WIFI_IP[0], WIFI_IP[1], WIFI_IP[2], WIFI_IP[3], WIFI_Port);
+                "Set WIFIParam Finish!\r\nLocal IP:%d,%d,%d,%d\r\nLocal Port:%d\r\nServer IP:%d.%d.%d.%d\r\nServer Port:%d",
+                ESP_IP[0],ESP_IP[1],ESP_IP[2],ESP_IP[3], ESP_Port, WIFI_IP[0], WIFI_IP[1], WIFI_IP[2], WIFI_IP[3], WIFI_Port);
             memcpy(Tx_Buffer, send_buf, strlen((const char*)send_buf));
             Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((const char*)send_buf));//指定Socket(0~7)发送数据处理
             memset(Tx_Buffer, 0x00, 150);

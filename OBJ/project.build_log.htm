@@ -27,18 +27,18 @@ Project File Date:  12/06/2023
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\Software\KeilMDK\ARM\ARMCC\Bin'
 Build target 'complete'
-compiling DataPackage.c...
-..\HARDWARE\DataPackage\DataPackage.c(769): warning:  #186-D: pointless comparison of unsigned integer with zero
-          if ((channel >= 1 && channel <= 3) && (wordlength >= 0 && wordlength <= 1)&&
-..\HARDWARE\DataPackage\DataPackage.c(770): warning:  #186-D: pointless comparison of unsigned integer with zero
-              (stopbits >= 0 && stopbits <= 3) && (Parity >= 0 && Parity <= 2) &&
-..\HARDWARE\DataPackage\DataPackage.c(771): warning:  #186-D: pointless comparison of unsigned integer with zero
-              (HardwareFlowControl >= 0 && HardwareFlowControl <= 3))
-..\HARDWARE\DataPackage\DataPackage.c(913): warning:  #1-D: last line of file ends without a newline
-  }
-..\HARDWARE\DataPackage\DataPackage.c: 4 warnings, 0 errors
+compiling ESP01.c...
+..\HARDWARE\ESP01\ESP01.c(28): warning:  #177-D: variable "p"  was declared but never referenced
+      char* p;
+..\HARDWARE\ESP01\ESP01.c(29): warning:  #177-D: variable "send_buf"  was declared but never referenced
+      char send_buf[20];
+..\HARDWARE\ESP01\ESP01.c(47): warning:  #177-D: variable "SwitchFlag"  was declared but never referenced
+      _Bool SwitchFlag = 0;
+..\HARDWARE\ESP01\ESP01.c(49): warning:  #177-D: variable "p1"  was declared but never referenced
+  	char* p1;
+..\HARDWARE\ESP01\ESP01.c: 4 warnings, 0 errors
 linking...
-Program Size: Code=32282 RO-data=1378 RW-data=256 ZI-data=13112  
+Program Size: Code=32634 RO-data=1374 RW-data=264 ZI-data=13072  
 "..\OBJ\project.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Software Packages used:</h2>
